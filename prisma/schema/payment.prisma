@@ -1,0 +1,20 @@
+model Payment {
+  id                    String        @id @default(uuid())
+  orderId               String?
+  provider              String
+  method                String
+  amount                Float
+  currency              String        @default("BDT")
+  status                PaymentStatus @default(PENDING)
+  providerTransactionId String?
+  providerSessionId     String?
+  verificationPayload   Json?
+  verifiedAt            DateTime?
+  refundReason          String?
+  order                 Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@index([status])
+  @@index([providerTransactionId])
+}

@@ -1,8 +1,9 @@
 import type { ErrorRequestHandler } from 'express'
 import { ZodError, type ZodIssue } from 'zod'
+
 import StatusCode from '@/utils/statusCode'
 
-const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
+const globalErrorHandler: ErrorRequestHandler = (error, req, res, _next) => {
 	let statusCode = error.statusCode || StatusCode.INTERNAL_SERVER_ERROR
 	let message = error.message || 'Something went wrong'
 	let errorSources: unknown = undefined

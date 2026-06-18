@@ -1,0 +1,40 @@
+model Order {
+  id              String        @id @default(uuid())
+  customerName    String
+  phone           String
+  email           String?
+  fulfillmentType String
+  address         String?
+  notes           String?
+  subtotal        Float
+  deliveryFee     Float         @default(0)
+  vat             Float         @default(0)
+  serviceCharge   Float         @default(0)
+  discount        Float         @default(0)
+  total           Float
+  paymentMethod   String
+  paymentStatus   PaymentStatus @default(PENDING)
+  status          OrderStatus   @default(PLACED)
+  items           OrderItem[]
+  payments        Payment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([phone])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id              String    @id @default(uuid())
+  orderId         String
+  menuItemId      String?
+  nameSnapshot    String
+  quantity        Int
+  unitPrice       Float
+  selectedVariant Json?
+  selectedAddOns  Json?
+  lineTotal       Float
+  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem        MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+}

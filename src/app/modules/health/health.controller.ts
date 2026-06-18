@@ -1,7 +1,7 @@
+import { envVars } from '@/config/env'
 import catchAsync from '@/shared/catchAsync'
 import sendResponse from '@/shared/sendResponse'
 import StatusCode from '@/utils/statusCode'
-import { envVars } from '@/config/env'
 
 const getHealth = catchAsync(async (req, res) => {
 	sendResponse(res, {

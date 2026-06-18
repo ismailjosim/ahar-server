@@ -1,0 +1,16 @@
+model Reservation {
+  id              String            @id @default(uuid())
+  customerName    String
+  phone           String
+  guests          Int
+  reservationTime DateTime
+  tableCode       String?
+  status          ReservationStatus @default(PENDING)
+  occasion        String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([reservationTime])
+  @@index([status])
+}

@@ -1,0 +1,22 @@
+model MenuItem {
+  id          String      @id @default(uuid())
+  name        String
+  description String      @default("")
+  category    String
+  price       Float
+  emoji       String?
+  rating      Float       @default(4.5)
+  prepTime    String?
+  tags        String[]    @default([])
+  variants    Json        @default("[]")
+  addOns      Json        @default("[]")
+  isFeatured  Boolean     @default(false)
+  isSpicy     Boolean     @default(false)
+  isAvailable Boolean     @default(true)
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([category])
+  @@index([isAvailable])
+}

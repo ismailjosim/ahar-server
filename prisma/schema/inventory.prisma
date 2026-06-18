@@ -1,0 +1,27 @@
+model InventoryItem {
+  id            String           @id @default(uuid())
+  name          String
+  category      String
+  sku           String?          @unique
+  stock         Float            @default(0)
+  unit          String
+  threshold     Float            @default(10)
+  supplier      String?
+  unitCost      Float            @default(0)
+  lastRestocked DateTime?
+  audits        InventoryAudit[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model InventoryAudit {
+  id              String        @id @default(uuid())
+  inventoryItemId String
+  change          Float
+  previousStock   Float
+  nextStock       Float
+  reason          String?
+  changedByUserId String?
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+}

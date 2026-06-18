@@ -1,8 +1,9 @@
 import { type Server } from 'node:http'
 
-import app from './app'
 import { envVars } from '@/config/env'
 import { prisma } from '@/config/prisma.config'
+
+import app from './app'
 
 let server: Server
 
@@ -17,11 +18,22 @@ async function bootstrap() {
 		console.log('Database connected successfully')
 
 		server = app.listen(envVars.PORT, () => {
-			console.log(`Server is running on PORT: ${envVars.PORT}`)
+			console.log(`Server is running on http://localhost:${envVars.PORT}`)
+		})
+
+		server.on('close', () => {
+			console.log('HTTP server closed.')
+		})
+
+		server.on('error', (error) => {
+			console.error('HTTP server error:', error)
 		})
 
 		process.on('unhandledRejection', (error) => {
-			console.error('Unhandled Rejection detected. Shutting down...', error)
+			console.error(
+				'Unhandled Rejection detected. Shutting down...',
+				error,
+			)
 			server.close(() => process.exit(1))
 		})
 

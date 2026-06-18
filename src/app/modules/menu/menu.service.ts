@@ -1,10 +1,20 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '@/config/prisma.config'
 import AppError from '@/helpers/AppError'
-import StatusCode from '@/utils/statusCode'
 import { calculatePagination } from '@/utils/paginationHelper'
+import StatusCode from '@/utils/statusCode'
 
-const createMenuItem = async (payload: Prisma.MenuItemCreateInput) => {
+import type {
+	MenuItemCreateInput,
+	MenuItemUncheckedCreateInput,
+	MenuItemUncheckedUpdateInput,
+	MenuItemUpdateInput,
+	MenuItemWhereInput,
+} from '../../../generated/prisma/models/MenuItem'
+
+type MenuItemCreatePayload = MenuItemCreateInput | MenuItemUncheckedCreateInput
+type MenuItemUpdatePayload = MenuItemUpdateInput | MenuItemUncheckedUpdateInput
+
+const createMenuItem = async (payload: MenuItemCreatePayload) => {
 	return prisma.menuItem.create({
 		data: payload,
 	})
@@ -16,9 +26,10 @@ const getMenuItems = async (query: Record<string, unknown>) => {
 		limit: Number(query.limit || query.pageSize || 20),
 	})
 	const search = typeof query.search === 'string' ? query.search : undefined
-	const category = typeof query.category === 'string' ? query.category : undefined
+	const category =
+		typeof query.category === 'string' ? query.category : undefined
 
-	const where: Prisma.MenuItemWhereInput = {
+	const where: MenuItemWhereInput = {
 		...(category && { category }),
 		...(search && {
 			OR: [
@@ -57,7 +68,7 @@ const getMenuItemById = async (id: string) => {
 	return item
 }
 
-const updateMenuItem = async (id: string, payload: Prisma.MenuItemUpdateInput) => {
+const updateMenuItem = async (id: string, payload: MenuItemUpdatePayload) => {
 	await getMenuItemById(id)
 
 	return prisma.menuItem.update({

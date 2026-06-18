@@ -1,6 +1,7 @@
 import catchAsync from '@/shared/catchAsync'
 import sendResponse from '@/shared/sendResponse'
 import StatusCode from '@/utils/statusCode'
+
 import { MenuService } from './menu.service'
 
 const createMenuItem = catchAsync(async (req, res) => {
@@ -38,7 +39,10 @@ const getMenuItemById = catchAsync(async (req, res) => {
 })
 
 const updateMenuItem = catchAsync(async (req, res) => {
-	const result = await MenuService.updateMenuItem(String(req.params.id), req.body)
+	const result = await MenuService.updateMenuItem(
+		String(req.params.id),
+		req.body,
+	)
 
 	sendResponse(res, {
 		statusCode: StatusCode.OK,
