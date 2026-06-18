@@ -6,6 +6,8 @@ const requiredEnvVars = [
 	'DATABASE_URL',
 	'JWT_ACCESS_SECRET',
 	'JWT_REFRESH_SECRET',
+	'SUPER_ADMIN_EMAIL',
+	'SUPER_ADMIN_PASS',
 ] as const
 
 requiredEnvVars.forEach((key) => {
@@ -32,4 +34,6 @@ export const envVars = {
 	EMAIL_USER: process.env.EMAIL_USER as string,
 	EMAIL_PASS: process.env.EMAIL_PASS as string,
 	EMAIL_FROM: process.env.EMAIL_FROM as string,
+	SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+	SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS as string,
 }

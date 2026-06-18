@@ -1,4 +1,6 @@
 enum UserRole {
+  SUPER_ADMIN
+  CUSTOMER
   OWNER
   MANAGER
   KITCHEN
