@@ -1,89 +1,36 @@
 # Ahar Server
 
-Backend API for the Ahar restaurant management system.
+TypeScript Express backend for the Ahar restaurant management system.
 
-The server now uses a structured Express app with validation, centralized errors, request logging, and JSON-backed persistence. The JSON store is still temporary; the next backend milestone is a real database and authentication.
+This backend follows the same broad structure as `ismailjosim/WellSpace-backend`:
 
-## Run
+- `src/app/config`
+- `src/app/helpers`
+- `src/app/middlewares`
+- `src/app/modules`
+- `src/app/routes`
+- `src/app/shared`
+- `src/app/utils`
+- `prisma/schema`
+
+## Setup
 
 ```bash
-npm run dev
-```
-
-Default URL: `http://localhost:4000`
-
-Copy environment defaults when needed:
-
-```bash
+pnpm install
 cp .env.example .env
+pnpm prisma:generate
+pnpm prisma:migrate
+pnpm dev
 ```
 
-## Current Endpoints
+PostgreSQL is required. Configure `DATABASE_URL` in `.env` before running migrations or starting the server.
 
-- `GET /health`
-- `GET /api/:collection`
-- `POST /api/:collection`
-- `GET /api/:collection/:id`
-- `PATCH /api/:collection/:id`
-- `DELETE /api/:collection/:id`
+## Scripts
 
-Supported collections:
-
-- `menu`
-- `orders`
-- `reservations`
-- `payments`
-- `inventory`
-- `settings`
-- `notifications`
-
-Data is stored in `data/db.json`, so changes survive server restarts. This scaffold is intentionally simple and should be replaced or extended with authentication, role-based access control, validation, and a production database before live use.
-
-## Query Support
-
-List endpoints support:
-
-- `page`
-- `pageSize`
-- `search`
-- `status`
-- `category`
-
-Example:
-
-```text
-GET /api/menu?page=1&pageSize=20&search=kacchi
-```
-
-## Response Shapes
-
-List response:
-
-```json
-{
-  "data": [],
-  "total": 0,
-  "page": 1,
-  "pageSize": 20
-}
-```
-
-Single resource response:
-
-```json
-{
-  "data": {}
-}
-```
-
-Error response:
-
-```json
-{
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Request validation failed",
-    "fields": {}
-  }
-}
-```
+- `pnpm dev` - run the TypeScript server with watch mode.
+- `pnpm build` - compile TypeScript to `dist`.
+- `pnpm start` - run compiled server.
+- `pnpm check` - type-check without emitting files.
+- `pnpm prisma:generate` - generate Prisma client.
+- `pnpm prisma:migrate` - run Prisma migration against PostgreSQL.
+- `pnpm prisma:studio` - open Prisma Studio.

@@ -4,14 +4,51 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "node src/server.js",
-		"start": "node src/server.js",
-		"check": "node --check src/server.js"
+		"dev": "pnpm exec tsx watch ./src/server.ts",
+		"build": "tsc",
+		"start": "node ./dist/server.js",
+		"postinstall": "prisma generate --schema=./prisma/schema/schema.prisma",
+		"prisma:generate": "pnpm exec prisma generate --schema=./prisma/schema/schema.prisma",
+		"prisma:migrate": "pnpm exec prisma migrate dev --schema=./prisma/schema/schema.prisma",
+		"prisma:studio": "pnpm exec prisma studio --schema=./prisma/schema/schema.prisma",
+		"check": "tsc --noEmit",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
 	},
 	"dependencies": {
-		"cors": "^2.8.6",
-		"dotenv": "^17.4.2",
-		"express": "^5.2.1",
-		"zod": "^4.4.3"
+		"@prisma/client": "^6.18.0",
+		"cloudinary": "^2.7.0",
+		"cors": "^2.8.5",
+		"dotenv": "^17.2.3",
+		"ejs": "^3.1.10",
+		"express": "^5.1.0",
+		"http-status": "^2.1.0",
+		"jsonwebtoken": "^9.0.2",
+		"multer": "^2.0.2",
+		"multer-storage-cloudinary": "^4.0.0",
+		"nodemailer": "^7.0.10",
+		"uuid": "^13.0.0",
+		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/cors": "^2.8.19",
+		"@types/ejs": "^3.1.5",
+		"@types/express": "^5.0.3",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/multer": "^2.0.0",
+		"@types/node": "^24.5.2",
+		"@types/nodemailer": "^7.0.3",
+		"eslint": "^10.5.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.6",
+		"eslint-plugin-simple-import-sort": "^13.0.0",
+		"prettier": "^3.8.4",
+		"prisma": "^6.18.0",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.2",
+		"typescript-eslint": "^8.61.1"
 	}
 }
