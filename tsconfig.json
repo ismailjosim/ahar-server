@@ -8,10 +8,8 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"ignoreDeprecations": "5.0",
-		"baseUrl": "./src/app",
 		"paths": {
-			"@/*": ["*"]
+			"@/*": ["./src/app/*"]
 		}
 	},
 	"include": ["src"],
