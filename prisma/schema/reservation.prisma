@@ -4,6 +4,7 @@ model Reservation {
   phone           String
   guests          Int
   reservationTime DateTime
+  displayTime     String            @default("")
   tableCode       String?
   status          ReservationStatus @default(PENDING)
   occasion        String?

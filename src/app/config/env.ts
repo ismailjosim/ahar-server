@@ -17,6 +17,7 @@ requiredEnvVars.forEach((key) => {
 export const envVars = {
 	NODE_ENV: process.env.NODE_ENV as string,
 	PORT: Number(process.env.PORT) as number,
+	HOST: process.env.HOST || '127.0.0.1',
 	CORS_ORIGIN: process.env.CORS_ORIGIN as string,
 	DATABASE_URL: process.env.DATABASE_URL as string,
 	JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,

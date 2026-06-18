@@ -4,6 +4,7 @@ model Order {
   phone           String
   email           String?
   fulfillmentType String
+  itemSummary     String        @default("")
   address         String?
   notes           String?
   subtotal        Float

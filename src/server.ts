@@ -17,8 +17,10 @@ async function bootstrap() {
 		await prisma.$connect()
 		console.log('Database connected successfully')
 
-		server = app.listen(envVars.PORT, () => {
-			console.log(`Server is running on http://localhost:${envVars.PORT}`)
+		server = app.listen(envVars.PORT, envVars.HOST, () => {
+			console.log(
+				`Server is running on http://${envVars.HOST}:${envVars.PORT}`,
+			)
 		})
 
 		server.on('close', () => {
