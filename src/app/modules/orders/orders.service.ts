@@ -175,44 +175,51 @@ const createOrder = async (payload: CreateOrderPayload) => {
 		value as OrderItemUncheckedCreateWithoutOrderInput['selectedVariant']
 
 	// Validate and price each item from the DB — client prices are never trusted.
-	const items: OrderItemUncheckedCreateWithoutOrderInput[] = await Promise.all(
-		payload.items.map(async (item) => {
-			if (!item.menuItemId) {
-				// Custom items without a menuItemId fall back to the client price.
-				return {
-					menuItemId: null,
-					nameSnapshot: item.nameSnapshot,
-					quantity: item.quantity,
-					unitPrice: item.unitPrice,
-					selectedVariant: jsonInput(item.selectedVariant ?? undefined),
-					selectedAddOns: jsonInput(item.selectedAddOns ?? undefined),
-					lineTotal: item.unitPrice * item.quantity,
+	const items: OrderItemUncheckedCreateWithoutOrderInput[] =
+		await Promise.all(
+			payload.items.map(async (item) => {
+				if (!item.menuItemId) {
+					// Custom items without a menuItemId fall back to the client price.
+					return {
+						menuItemId: null,
+						nameSnapshot: item.nameSnapshot,
+						quantity: item.quantity,
+						unitPrice: item.unitPrice,
+						selectedVariant: jsonInput(
+							item.selectedVariant ?? undefined,
+						),
+						selectedAddOns: jsonInput(
+							item.selectedAddOns ?? undefined,
+						),
+						lineTotal: item.unitPrice * item.quantity,
+					}
 				}
-			}
 
-			const dbItem = await prisma.menuItem.findUnique({
-				where: { id: item.menuItemId },
-			})
-			if (!dbItem || !dbItem.isAvailable) {
-				throw new AppError(
-					StatusCode.BAD_REQUEST,
-					`Item "${item.nameSnapshot}" is not available.`,
-				)
-			}
+				const dbItem = await prisma.menuItem.findUnique({
+					where: { id: item.menuItemId },
+				})
+				if (!dbItem || !dbItem.isAvailable) {
+					throw new AppError(
+						StatusCode.BAD_REQUEST,
+						`Item "${item.nameSnapshot}" is not available.`,
+					)
+				}
 
-			const unitPrice = dbItem.price
-			const lineTotal = unitPrice * item.quantity
-			return {
-				menuItemId: item.menuItemId,
-				nameSnapshot: dbItem.name,
-				quantity: item.quantity,
-				unitPrice,
-				selectedVariant: jsonInput(item.selectedVariant ?? undefined),
-				selectedAddOns: jsonInput(item.selectedAddOns ?? undefined),
-				lineTotal,
-			}
-		}),
-	)
+				const unitPrice = dbItem.price
+				const lineTotal = unitPrice * item.quantity
+				return {
+					menuItemId: item.menuItemId,
+					nameSnapshot: dbItem.name,
+					quantity: item.quantity,
+					unitPrice,
+					selectedVariant: jsonInput(
+						item.selectedVariant ?? undefined,
+					),
+					selectedAddOns: jsonInput(item.selectedAddOns ?? undefined),
+					lineTotal,
+				}
+			}),
+		)
 
 	const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0)
 
