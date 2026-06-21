@@ -16,14 +16,17 @@ model Order {
   paymentMethod   String
   paymentStatus   PaymentStatus @default(PENDING)
   status          OrderStatus   @default(PLACED)
+  userId          String?
   items           OrderItem[]
   payments        Payment[]
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
   @@index([phone])
   @@index([status])
   @@index([paymentStatus])
+  @@index([userId])
 }
 
 model OrderItem {

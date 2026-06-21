@@ -1,11 +1,5 @@
-enum UserRole {
-  SUPER_ADMIN
-  CUSTOMER
-  OWNER
-  MANAGER
-  KITCHEN
-  CASHIER
-}
+// UserRole enum removed — role is now a plain String on the User model.
+// Lowercase string values: "customer" | "cashier" | "kitchen" | "manager" | "owner" | "super_admin"
 
 enum OrderStatus {
   PLACED

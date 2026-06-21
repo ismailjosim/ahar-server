@@ -5,6 +5,7 @@ model MenuItem {
   category    String
   price       Float
   emoji       String?
+  imageUrl    String?
   rating      Float       @default(4.5)
   prepTime    String?
   tags        String[]    @default([])
@@ -14,6 +15,7 @@ model MenuItem {
   isSpicy     Boolean     @default(false)
   isAvailable Boolean     @default(true)
   orderItems  OrderItem[]
+  reviews     Review[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
