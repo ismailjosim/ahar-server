@@ -2,13 +2,20 @@ import { Router } from 'express'
 
 import { optionalAuth, requireAuth } from '@/middlewares/requireAuth'
 import { requireRole } from '@/middlewares/requireRole'
+import validateRequest from '@/middlewares/validateRequest'
 
 import { ReservationsController } from './reservations.controller'
+import { ReservationsValidation } from './reservations.validation'
 
 const router = Router()
 
 // Public — customers book tables (optionalAuth links to account when logged in)
-router.post('/', optionalAuth, ReservationsController.createReservation)
+router.post(
+	'/',
+	optionalAuth,
+	validateRequest(ReservationsValidation.createReservation),
+	ReservationsController.createReservation,
+)
 
 // Public — customers look up their own reservation by ID
 router.get('/:id', ReservationsController.getReservationById)
@@ -26,6 +33,7 @@ router.patch(
 	'/:id',
 	requireAuth,
 	requireRole('manager'),
+	validateRequest(ReservationsValidation.updateReservation),
 	ReservationsController.updateReservation,
 )
 

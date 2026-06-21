@@ -2,8 +2,10 @@ import { Router } from 'express'
 
 import { requireAuth } from '@/middlewares/requireAuth'
 import { requireRole } from '@/middlewares/requireRole'
+import validateRequest from '@/middlewares/validateRequest'
 
 import { PaymentsController } from './payments.controller'
+import { PaymentsValidation } from './payments.validation'
 
 const router = Router()
 
@@ -26,6 +28,7 @@ router.post(
 	'/',
 	requireAuth,
 	requireRole('cashier'),
+	validateRequest(PaymentsValidation.createPayment),
 	PaymentsController.createPayment,
 )
 
@@ -34,6 +37,7 @@ router.patch(
 	'/:id',
 	requireAuth,
 	requireRole('owner'),
+	validateRequest(PaymentsValidation.updatePayment),
 	PaymentsController.updatePayment,
 )
 

@@ -2,8 +2,10 @@ import { Router } from 'express'
 
 import { requireAuth } from '@/middlewares/requireAuth'
 import { requireRole } from '@/middlewares/requireRole'
+import validateRequest from '@/middlewares/validateRequest'
 
 import { InventoryController } from './inventory.controller'
+import { InventoryValidation } from './inventory.validation'
 
 const router = Router()
 
@@ -18,6 +20,7 @@ router.post(
 	'/',
 	requireAuth,
 	requireRole('manager'),
+	validateRequest(InventoryValidation.createInventoryItem),
 	InventoryController.createInventoryItem,
 )
 router.get(
@@ -30,6 +33,7 @@ router.patch(
 	'/:id',
 	requireAuth,
 	requireRole('manager'),
+	validateRequest(InventoryValidation.updateInventoryItem),
 	InventoryController.updateInventoryItem,
 )
 router.delete(

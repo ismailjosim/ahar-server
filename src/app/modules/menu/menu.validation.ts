@@ -17,6 +17,7 @@ const createMenuItem = z.object({
 		category: z.string().min(1),
 		price: z.number().min(0),
 		emoji: z.string().optional(),
+		imageUrl: z.string().url().optional(),
 		rating: z.number().min(0).max(5).optional(),
 		prepTime: z.string().optional(),
 		tags: z.array(z.string()).optional(),
