@@ -30,7 +30,10 @@ const getOrderById = catchAsync(async (req, res) => {
 })
 
 const createOrder = catchAsync(async (req, res) => {
-	const result = await OrdersService.createOrder(req.body)
+	const result = await OrdersService.createOrder({
+		...req.body,
+		userId: req.user?.id,
+	})
 	sendResponse(res, {
 		statusCode: StatusCode.CREATED,
 		success: true,
