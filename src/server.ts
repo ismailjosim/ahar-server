@@ -2,6 +2,7 @@ import { type Server } from 'node:http'
 
 import { envVars } from '@/config/env'
 import { prisma } from '@/config/prisma.config'
+import { seedMenu } from '@/seed/menu.seed'
 import { ensureSuperAdmin } from '@/seed/superAdmin.seed'
 
 import app from './app'
@@ -18,6 +19,7 @@ async function bootstrap() {
 		await prisma.$connect()
 		console.log('Database connected successfully')
 		await ensureSuperAdmin()
+		await seedMenu()
 
 		server = app.listen(envVars.PORT, envVars.HOST, () => {
 			console.log(

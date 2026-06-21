@@ -1,5 +1,6 @@
 import { Router } from 'express'
 
+import { upload } from '@/config/multer.config'
 import { requireAuth } from '@/middlewares/requireAuth'
 import { requireRole } from '@/middlewares/requireRole'
 import validateRequest from '@/middlewares/validateRequest'
@@ -33,6 +34,15 @@ router.delete(
 	requireAuth,
 	requireRole('owner'),
 	MenuController.deleteMenuItem,
+)
+
+// Protected — manager+ to upload/replace the image for a menu item
+router.post(
+	'/:id/image',
+	requireAuth,
+	requireRole('manager'),
+	upload.single('image'),
+	MenuController.uploadImage,
 )
 
 export const MenuRoutes = router
