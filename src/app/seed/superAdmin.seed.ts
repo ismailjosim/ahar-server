@@ -1,9 +1,7 @@
+import { auth } from '@/config/auth.config'
 import { envVars } from '@/config/env'
 import { prisma } from '@/config/prisma.config'
 
-// Super admin creation requires better-auth to hash the password and create the
-// account row. This is set up in Feature 03. Until then, this seed only upgrades
-// an existing user's role if needed, and logs a reminder when no admin exists yet.
 export async function ensureSuperAdmin() {
 	const email = envVars.SUPER_ADMIN_EMAIL.trim().toLowerCase()
 
@@ -15,15 +13,34 @@ export async function ensureSuperAdmin() {
 				where: { email },
 				data: { role: 'super_admin', isActive: true },
 			})
-			console.log(`Super admin role applied to existing user: ${email}`)
+			console.log(`Super admin role applied: ${email}`)
 		} else {
-			console.log(`Super admin already exists: ${email}`)
+			console.log(`Super admin exists: ${email}`)
 		}
 		return
 	}
 
-	// No user found — admin will be created via better-auth signup in Feature 03.
-	console.log(
-		`Super admin not yet created. Run Feature 03 setup to create: ${email}`,
-	)
+	// Create via better-auth — hashes the password and creates the account row.
+	const result = await auth.api.signUpEmail({
+		body: {
+			name: 'Super Admin',
+			email,
+			password: envVars.SUPER_ADMIN_PASS,
+		},
+	})
+
+	if (!result?.user) {
+		console.error(
+			'Super admin creation failed — check BETTER_AUTH_SECRET and DB connection.',
+		)
+		return
+	}
+
+	// better-auth creates users with role "customer" by default — upgrade it.
+	await prisma.user.update({
+		where: { email },
+		data: { role: 'super_admin', isActive: true, emailVerified: true },
+	})
+
+	console.log(`Super admin created: ${email}`)
 }

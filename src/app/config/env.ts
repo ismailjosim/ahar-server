@@ -4,8 +4,7 @@ dotenv.config()
 
 const requiredEnvVars = [
 	'DATABASE_URL',
-	'JWT_ACCESS_SECRET',
-	'JWT_REFRESH_SECRET',
+	'BETTER_AUTH_SECRET',
 	'SUPER_ADMIN_EMAIL',
 	'SUPER_ADMIN_PASS',
 ] as const
@@ -17,23 +16,29 @@ requiredEnvVars.forEach((key) => {
 })
 
 export const envVars = {
-	NODE_ENV: process.env.NODE_ENV as string,
-	PORT: Number(process.env.PORT) as number,
+	NODE_ENV: process.env.NODE_ENV || 'development',
+	PORT: Number(process.env.PORT) || 3001,
 	HOST: process.env.HOST || '127.0.0.1',
-	CORS_ORIGIN: process.env.CORS_ORIGIN as string,
+	CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
 	DATABASE_URL: process.env.DATABASE_URL as string,
-	JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
-	JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
-	JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN as string,
-	JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as string,
+
+	// better-auth — must match BETTER_AUTH_SECRET in ahar-frontend .env.local
+	BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
+	BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+
+	// Cloudinary
 	CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
 	CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
 	CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
-	EMAIL_HOST: process.env.EMAIL_HOST as string,
-	EMAIL_PORT: Number(process.env.EMAIL_PORT) as number,
-	EMAIL_USER: process.env.EMAIL_USER as string,
-	EMAIL_PASS: process.env.EMAIL_PASS as string,
-	EMAIL_FROM: process.env.EMAIL_FROM as string,
+
+	// SMTP (Feature 11)
+	SMTP_HOST: process.env.SMTP_HOST as string,
+	SMTP_PORT: Number(process.env.SMTP_PORT) || 587,
+	SMTP_USER: process.env.SMTP_USER as string,
+	SMTP_PASS: process.env.SMTP_PASS as string,
+	EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@ahar.com',
+
+	// Super admin seed
 	SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
 	SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS as string,
 }
