@@ -19,7 +19,7 @@ const requiredEnvVars = [
 	'SMTP_PORT',
 	'SMTP_USER',
 	'SMTP_PASS',
-	'EMAIL_FROM',
+	'SMTP_FROM',
 	'SUPER_ADMIN_EMAIL',
 	'SUPER_ADMIN_PASS',
 ] as const
@@ -50,7 +50,7 @@ export const envVars = {
 	SMTP_PORT: Number(process.env.SMTP_PORT) as number,
 	SMTP_USER: process.env.SMTP_USER as string,
 	SMTP_PASS: process.env.SMTP_PASS as string,
-	EMAIL_FROM: process.env.EMAIL_FROM as string,
+	SMTP_FROM: process.env.SMTP_FROM as string,
 
 	// Super admin seed
 	SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
