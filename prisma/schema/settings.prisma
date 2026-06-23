@@ -14,8 +14,10 @@ model RestaurantSettings {
   acceptBkash       Boolean  @default(false)
   acceptNagad       Boolean  @default(false)
   acceptSslcommerz  Boolean  @default(false)
-  lowStockAlerts    Boolean  @default(true)
-  reservationAlerts Boolean  @default(true)
-  paymentAlerts     Boolean  @default(true)
-  updatedAt         DateTime @updatedAt
+  lowStockAlerts      Boolean  @default(true)
+  reservationAlerts   Boolean  @default(true)
+  paymentAlerts       Boolean  @default(true)
+  maxTablesPerSlot    Int      @default(10)
+  reservationSlotGap  Int      @default(30)
+  updatedAt           DateTime @updatedAt
 }

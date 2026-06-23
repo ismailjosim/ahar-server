@@ -24,6 +24,8 @@ const defaultSettings = {
 	lowStockAlerts: true,
 	reservationAlerts: true,
 	paymentAlerts: true,
+	maxTablesPerSlot: 10,
+	reservationSlotGap: 30,
 }
 
 const toClient = (settings: SettingsRecord | typeof defaultSettings) => ({
@@ -44,6 +46,8 @@ const toClient = (settings: SettingsRecord | typeof defaultSettings) => ({
 	lowStockAlerts: settings.lowStockAlerts,
 	reservationAlerts: settings.reservationAlerts,
 	paymentAlerts: settings.paymentAlerts,
+	maxTablesPerSlot: settings.maxTablesPerSlot,
+	reservationSlotGap: settings.reservationSlotGap,
 })
 
 const getSettings = async () => {

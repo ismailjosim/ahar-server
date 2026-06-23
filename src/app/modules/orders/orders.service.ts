@@ -291,6 +291,18 @@ const createOrder = async (payload: CreateOrderPayload) => {
 		include: { items: true },
 	})
 
+	if (payload.paymentMethod === 'cod') {
+		await prisma.payment.create({
+			data: {
+				orderId: order.id,
+				provider: 'cod',
+				method: 'cod',
+				amount: order.total,
+				status: PaymentStatus.PENDING,
+			},
+		})
+	}
+
 	return toClient(order)
 }
 

@@ -41,4 +41,15 @@ router.patch(
 	PaymentsController.updatePayment,
 )
 
+// Authenticated user initiates payment
+router.post(
+	'/sslcommerz/init',
+	requireAuth,
+	PaymentsController.initSSLCommerz,
+)
+
+// IPN from SSLCOMMERZ (no auth — SSLCOMMERZ server calls this directly)
+router.post('/sslcommerz/ipn', PaymentsController.handleSSLCommerzIPN)
+
 export const PaymentsRoutes = router
+

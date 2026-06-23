@@ -17,4 +17,5 @@ model Payment {
 
   @@index([status])
   @@index([providerTransactionId])
+  @@unique([orderId, provider])
 }

@@ -32,7 +32,8 @@ const getReservationById = catchAsync(async (req, res) => {
 })
 
 const createReservation = catchAsync(async (req, res) => {
-	const result = await ReservationsService.createReservation(req.body)
+	const userId = req.user?.id ?? undefined
+	const result = await ReservationsService.createReservation(req.body, userId)
 	sendResponse(res, {
 		statusCode: StatusCode.CREATED,
 		success: true,

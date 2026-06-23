@@ -1,8 +1,12 @@
+import { prisma } from '@/config/prisma.config'
+import AppError from '@/helpers/AppError'
 import catchAsync from '@/shared/catchAsync'
 import sendResponse from '@/shared/sendResponse'
 import StatusCode from '@/utils/statusCode'
 
+import { PaymentStatus } from '../../../generated/prisma/enums'
 import { PaymentsService } from './payments.service'
+import { SslService } from './sslcommerz/ssl.service'
 
 const getPayments = catchAsync(async (req, res) => {
 	const result = await PaymentsService.getPayments(req.query)
@@ -52,9 +56,86 @@ const updatePayment = catchAsync(async (req, res) => {
 	})
 })
 
+const initSSLCommerz = catchAsync(async (req, res) => {
+	const { orderId } = req.body
+	const order = await prisma.order.findUnique({ where: { id: orderId } })
+	if (!order) throw new AppError(StatusCode.NOT_FOUND, 'Order not found.')
+
+	const gatewayUrl = await SslService.initSSLCommerz({
+		id: order.id,
+		total: order.total,
+		customerName: order.customerName,
+		phone: order.phone,
+		email: order.email ?? undefined,
+	})
+
+	// Store a Pending payment record
+	await prisma.payment.upsert({
+		where: { orderId_provider: { orderId: order.id, provider: 'sslcommerz' } },
+		update: {},
+		create: {
+			orderId: order.id,
+			provider: 'sslcommerz',
+			method: 'sslcommerz',
+			amount: order.total,
+			status: PaymentStatus.PENDING,
+		},
+	})
+
+	sendResponse(res, {
+		statusCode: StatusCode.OK,
+		success: true,
+		message: 'Gateway URL ready',
+		data: { gatewayUrl },
+	})
+})
+
+const handleSSLCommerzIPN = catchAsync(async (req, res) => {
+	const { tran_id, val_id, status } = req.body
+
+	if (status !== 'VALID') {
+		// Payment failed — update order and payment status
+		await prisma.order.update({
+			where: { id: tran_id },
+			data: { paymentStatus: PaymentStatus.FAILED },
+		})
+		await prisma.payment.updateMany({
+			where: { orderId: tran_id, provider: 'sslcommerz' },
+			data: { status: PaymentStatus.FAILED },
+		})
+		res.status(200).send('IPN received')
+		return
+	}
+
+	const isValid = await SslService.validateSSLCommerz(val_id)
+	if (!isValid) {
+		res.status(200).send('Validation failed')
+		return
+	}
+
+	await prisma.order.update({
+		where: { id: tran_id },
+		data: { paymentStatus: PaymentStatus.COMPLETED },
+	})
+	await prisma.payment.updateMany({
+		where: { orderId: tran_id, provider: 'sslcommerz' },
+		data: {
+			status: PaymentStatus.COMPLETED,
+			providerTransactionId: val_id,
+			verifiedAt: new Date(),
+			verificationPayload: req.body as any,
+		},
+	})
+
+	res.status(200).send('IPN received')
+})
+
 export const PaymentsController = {
 	getPayments,
 	getPaymentById,
 	createPayment,
 	updatePayment,
+	initSSLCommerz,
+	handleSSLCommerzIPN,
 }
+

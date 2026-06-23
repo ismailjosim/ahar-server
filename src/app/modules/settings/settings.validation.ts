@@ -20,6 +20,8 @@ const updateSettings = z.object({
 		lowStockAlerts: z.boolean().optional(),
 		reservationAlerts: z.boolean().optional(),
 		paymentAlerts: z.boolean().optional(),
+		maxTablesPerSlot: z.number().int().min(1).max(200).optional(),
+		reservationSlotGap: z.number().int().min(5).max(120).optional(),
 	}),
 })
 
