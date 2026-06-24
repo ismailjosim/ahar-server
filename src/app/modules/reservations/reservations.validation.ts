@@ -6,6 +6,7 @@ const createReservation = z.object({
 	body: z.object({
 		customerName: z.string().min(1).max(120),
 		phone: z.string().regex(BD_PHONE_REGEX, 'Invalid BD phone number'),
+		email: z.string().email().optional().or(z.literal('')),
 		guests: z.number().int().min(1).max(20),
 		displayTime: z.string().min(1),
 		tableCode: z.string().optional(),

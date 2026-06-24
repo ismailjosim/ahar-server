@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Staff Invitation</title></head>
+<body style="font-family: sans-serif; background: #fffdf9; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e8d5c4;">
+    <div style="background: #b22222; padding: 24px; text-align: center;">
+      <h1 style="color: #d4a017; margin: 0; font-size: 28px;"><%- restaurantName %></h1>
+      <p style="color: #fff; margin: 4px 0 0;">You're Invited!</p>
+    </div>
+    <div style="padding: 24px;">
+      <p>Hello,</p>
+      <p><strong><%- invite.inviterName %></strong> has invited you to join <%- restaurantName %> as a <strong><%- invite.role %></strong>.</p>
+      <div style="background: #fff8f0; padding: 16px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <p style="color: #888; font-size: 12px; margin: 0 0 12px;">Click the button below to accept the invitation and create your account:</p>
+        <a href="<%- signupUrl %>" style="display: inline-block; background: #b22222; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Accept Invitation</a>
+      </div>
+      <p style="color: #888; font-size: 12px;">Or copy this link into your browser:</p>
+      <p style="color: #888; font-size: 11px; word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 4px;"><%- signupUrl %></p>
+      <p style="color: #888; font-size: 12px; margin-top: 20px;">This invitation will expire in 7 days. If you have any questions, please contact your administrator.</p>
+    </div>
+    <div style="background: #fff8f0; padding: 16px; text-align: center; color: #888; font-size: 12px;">
+      &copy; 2026 <%- restaurantName %> Restaurant. Dhaka, Bangladesh.
+    </div>
+  </div>
+</body>
+</html>

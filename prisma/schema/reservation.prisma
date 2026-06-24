@@ -2,6 +2,7 @@ model Reservation {
   id              String            @id @default(uuid())
   customerName    String
   phone           String
+  email           String?
   guests          Int
   reservationTime DateTime
   displayTime     String            @default("")

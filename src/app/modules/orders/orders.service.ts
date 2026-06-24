@@ -11,6 +11,7 @@ import {
 	toDbOrderStatus,
 } from './orders.utils'
 import { InventoryService } from '../inventory/inventory.service'
+import { EmailService } from '@/shared/email.service'
 
 interface CreateOrderItemInput {
 	menuItemId?: string
@@ -304,6 +305,25 @@ const createOrder = async (payload: CreateOrderPayload) => {
 		})
 	}
 
+	// Send order confirmation email
+	if (order.email) {
+		EmailService.sendOrderConfirmation({
+			customerName: order.customerName,
+			email: order.email,
+			id: order.id,
+			items: (order.items ?? []).map((i) => ({
+				name: i.nameSnapshot,
+				quantity: i.quantity,
+				lineTotal: i.lineTotal,
+			})),
+			total: order.total,
+			fulfillmentType: order.fulfillmentType,
+			paymentMethod: order.paymentMethod,
+		}).catch((err) =>
+			console.error('[Email] Order confirmation failed:', err)
+		)
+	}
+
 	return toClient(order)
 }
 
@@ -365,6 +385,28 @@ const updateOrderStatus = async (id: string, status: string) => {
 		data: updateData,
 		include: { items: true },
 	})
+
+	// Send status update email for key statuses
+	const NOTIFY_STATUSES = [
+		'Accepted',
+		'Out for Delivery',
+		'Delivered',
+		'Cancelled',
+	]
+	if (
+		NOTIFY_STATUSES.includes(status) &&
+		updated.email
+	) {
+		EmailService.sendOrderStatusUpdate({
+			customerName: updated.customerName,
+			email: updated.email,
+			id: updated.id,
+			status,
+		}).catch((err) =>
+			console.error('[Email] Status update failed:', err)
+		)
+	}
+
 	return toClient(updated)
 }
 

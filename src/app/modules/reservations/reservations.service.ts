@@ -4,6 +4,7 @@ import { calculatePagination } from '@/utils/paginationHelper'
 import StatusCode from '@/utils/statusCode'
 
 import { ReservationStatus } from '../../../generated/prisma/enums'
+import { EmailService } from '@/shared/email.service'
 
 type ReservationPayload = Record<string, unknown>
 
@@ -62,6 +63,7 @@ const toClient = (
 		id: reservation.id,
 		customer: reservation.customerName,
 		phone: reservation.phone,
+		email: reservation.email ?? null,
 		guests: reservation.guests,
 		time:
 			reservation.displayTime ||
@@ -206,6 +208,7 @@ const createReservation = async (
 					'Guest',
 			),
 			phone: String(payload.phone || ''),
+			email: payload.email ? String(payload.email) : undefined,
 			guests: Number(payload.guests || 2),
 			reservationTime: reservationDate,
 			displayTime,
@@ -221,6 +224,20 @@ const createReservation = async (
 			userId: userId ?? null,
 		},
 	})
+
+	// Send reservation confirmation email
+	EmailService.sendReservationConfirmation({
+		customerName: reservation.customerName,
+		email: reservation.email,
+		phone: reservation.phone,
+		id: reservation.id,
+		guests: reservation.guests,
+		displayTime: reservation.displayTime,
+		tableCode: reservation.tableCode ?? undefined,
+	}).catch((err) =>
+		console.error('[Email] Reservation confirmation failed:', err)
+	)
+
 	return toClient(reservation)
 }
 
@@ -274,6 +291,9 @@ const updateReservation = async (id: string, payload: ReservationPayload) => {
 			...(payload.phone !== undefined && {
 				phone: String(payload.phone),
 			}),
+			...(payload.email !== undefined && {
+				email: payload.email ? String(payload.email) : null,
+			}),
 			...(payload.guests !== undefined && {
 				guests: Number(payload.guests),
 			}),
@@ -298,6 +318,24 @@ const updateReservation = async (id: string, payload: ReservationPayload) => {
 			}),
 		},
 	})
+
+	// Send status update email for approved/rejected
+	const newStatus = String(payload.status)
+	if (
+		newStatus &&
+		['Approved', 'Rejected'].includes(newStatus) &&
+		reservation.email
+	) {
+		EmailService.sendReservationStatusUpdate({
+			customerName: reservation.customerName,
+			email: reservation.email,
+			id: reservation.id,
+			status: newStatus,
+		}).catch((err) =>
+			console.error('[Email] Reservation status update failed:', err)
+		)
+	}
+
 	return toClient(reservation)
 }
 
