@@ -10,6 +10,7 @@ import {
 	fromDbPaymentStatus,
 	toDbOrderStatus,
 } from './orders.utils'
+import { InventoryService } from '../inventory/inventory.service'
 
 interface CreateOrderItemInput {
 	menuItemId?: string
@@ -317,7 +318,10 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 }
 
 const updateOrderStatus = async (id: string, status: string) => {
-	const order = await prisma.order.findUnique({ where: { id } })
+	const order = await prisma.order.findUnique({
+		where: { id },
+		include: { items: true },
+	})
 	if (!order) throw new AppError(StatusCode.NOT_FOUND, 'Order not found')
 
 	const current = fromDbOrderStatus(order.status)
@@ -329,9 +333,36 @@ const updateOrderStatus = async (id: string, status: string) => {
 		)
 	}
 
+	const updateData: Record<string, unknown> = {
+		status: toDbOrderStatus(status),
+	}
+
+	// When transitioning to "Delivered", deduct inventory and update payment
+	if (status === 'Delivered') {
+		// Deduct inventory from order items
+		const orderItems = (order.items ?? []).map((item) => ({
+			nameSnapshot: item.nameSnapshot,
+			quantity: item.quantity,
+		}))
+		await InventoryService.adjustStockForOrder(orderItems)
+
+		// Mark COD payment as completed
+		await prisma.payment.updateMany({
+			where: {
+				orderId: id,
+				method: 'cod',
+				status: PaymentStatus.PENDING,
+			},
+			data: { status: PaymentStatus.COMPLETED },
+		})
+
+		// Update order's payment status to completed
+		updateData.paymentStatus = PaymentStatus.COMPLETED
+	}
+
 	const updated = await prisma.order.update({
 		where: { id },
-		data: { status: toDbOrderStatus(status) },
+		data: updateData,
 		include: { items: true },
 	})
 	return toClient(updated)

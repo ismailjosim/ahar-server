@@ -21,7 +21,17 @@ const updateInventoryItem = z.object({
 	body: inventoryItemBody.partial(),
 })
 
+const getInventoryItems = z.object({
+	query: z.object({
+		page: z.string().optional(),
+		limit: z.string().optional(),
+		pageSize: z.string().optional(),
+		lowStockOnly: z.enum(['true', 'false']).optional(),
+	}),
+})
+
 export const InventoryValidation = {
 	createInventoryItem,
 	updateInventoryItem,
+	getInventoryItems,
 }

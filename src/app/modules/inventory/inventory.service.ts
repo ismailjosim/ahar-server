@@ -40,6 +40,9 @@ const getInventoryItems = async (query: Record<string, unknown>) => {
 		page: Number(query.page || 1),
 		limit: Number(query.limit || query.pageSize || 100),
 	})
+
+	const lowStockOnly = query.lowStockOnly === 'true' || query.lowStockOnly === true
+
 	const [data, total] = await Promise.all([
 		prisma.inventoryItem.findMany({
 			skip,
@@ -49,7 +52,15 @@ const getInventoryItems = async (query: Record<string, unknown>) => {
 		}),
 		prisma.inventoryItem.count(),
 	])
-	return { data: data.map(toClient), total, page, limit }
+
+	let filteredData = data.map(toClient)
+	if (lowStockOnly) {
+		filteredData = filteredData.filter(
+			(item) => item && item.stock <= item.threshold
+		)
+	}
+
+	return { data: filteredData, total, page, limit }
 }
 
 const getInventoryItemById = async (id: string) => {
@@ -95,8 +106,15 @@ const updateInventoryItem = async (id: string, payload: InventoryPayload) => {
 	const current = await prisma.inventoryItem.findUnique({ where: { id } })
 	if (!current)
 		throw new AppError(StatusCode.NOT_FOUND, 'Inventory item not found')
+
 	const nextStock =
 		payload.stock === undefined ? current.stock : Number(payload.stock)
+
+	// Prevent negative stock
+	if (nextStock < 0) {
+		throw new AppError(StatusCode.BAD_REQUEST, 'Stock cannot be negative.')
+	}
+
 	const item = await prisma.inventoryItem.update({
 		where: { id },
 		data: {
@@ -133,6 +151,12 @@ const updateInventoryItem = async (id: string, payload: InventoryPayload) => {
 		},
 		include: { audits: { orderBy: { createdAt: 'desc' } } },
 	})
+
+	// Trigger low-stock notification if threshold crossed
+	if (nextStock <= item.threshold && current.stock > item.threshold) {
+		await createLowStockNotification(item)
+	}
+
 	return toClient(item)
 }
 
@@ -142,10 +166,77 @@ const deleteInventoryItem = async (id: string) => {
 	return null
 }
 
+const createLowStockNotification = async (item: {
+	id: string
+	name: string
+	stock: number
+	threshold: number
+}) => {
+	const severity = item.stock === 0 ? 'critical' : 'warning'
+	await prisma.notification.create({
+		data: {
+			type: 'low_stock',
+			severity,
+			title: `Low stock: ${item.name}`,
+			message: `${item.name} has ${item.stock} ${item.stock === 1 ? 'unit' : 'units'} remaining (threshold: ${item.threshold}).`,
+			sourceType: 'inventory',
+			sourceId: item.id,
+		},
+	})
+}
+
+interface OrderItemForInventory {
+	nameSnapshot: string
+	quantity: number
+}
+
+const adjustStockForOrder = async (
+	items: OrderItemForInventory[]
+) => {
+	for (const item of items) {
+		// Simple name-based lookup — case insensitive, partial match
+		const invItem = await prisma.inventoryItem.findFirst({
+			where: {
+				name: {
+					contains: item.nameSnapshot.split(' ')[0],
+					mode: 'insensitive',
+				},
+			},
+		})
+
+		if (!invItem) continue // no matching inventory item — skip silently
+
+		const newStock = Math.max(0, invItem.stock - item.quantity)
+
+		await prisma.inventoryItem.update({
+			where: { id: invItem.id },
+			data: { stock: newStock },
+		})
+
+		await prisma.inventoryAudit.create({
+			data: {
+				inventoryItemId: invItem.id,
+				change: -(item.quantity),
+				previousStock: invItem.stock,
+				nextStock: newStock,
+				reason: `Auto-deducted: order item "${item.nameSnapshot}"`,
+			},
+		})
+
+		if (newStock <= invItem.threshold) {
+			await createLowStockNotification({
+				...invItem,
+				stock: newStock,
+			})
+		}
+	}
+}
+
 export const InventoryService = {
 	getInventoryItems,
 	getInventoryItemById,
 	createInventoryItem,
 	updateInventoryItem,
 	deleteInventoryItem,
+	adjustStockForOrder,
 }

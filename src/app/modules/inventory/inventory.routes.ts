@@ -14,6 +14,7 @@ router.get(
 	'/',
 	requireAuth,
 	requireRole('manager'),
+	validateRequest(InventoryValidation.getInventoryItems),
 	InventoryController.getInventoryItems,
 )
 router.post(
