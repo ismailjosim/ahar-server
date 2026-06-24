@@ -10,7 +10,7 @@ import app from './app'
 let server: Server
 
 process.on('uncaughtException', (error) => {
-	console.error('Uncaught Exception detected. Shutting down...', error)
+	console.error('❌ Uncaught Exception detected. Shutting down...', error)
 	process.exit(1)
 })
 
