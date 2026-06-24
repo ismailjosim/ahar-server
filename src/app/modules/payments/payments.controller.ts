@@ -71,7 +71,9 @@ const initSSLCommerz = catchAsync(async (req, res) => {
 
 	// Store a Pending payment record
 	await prisma.payment.upsert({
-		where: { orderId_provider: { orderId: order.id, provider: 'sslcommerz' } },
+		where: {
+			orderId_provider: { orderId: order.id, provider: 'sslcommerz' },
+		},
 		update: {},
 		create: {
 			orderId: order.id,
@@ -138,4 +140,3 @@ export const PaymentsController = {
 	initSSLCommerz,
 	handleSSLCommerzIPN,
 }
-

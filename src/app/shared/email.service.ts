@@ -7,7 +7,7 @@ const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'app', 'email-templates')
 
 async function renderTemplate(
 	template: string,
-	data: Record<string, unknown>
+	data: Record<string, unknown>,
 ): Promise<string> {
 	return ejs.renderFile(path.join(TEMPLATES_DIR, `${template}.ejs`), data)
 }
@@ -43,7 +43,7 @@ export const EmailService = {
 		await sendMail(
 			order.email,
 			`আহার — Order Confirmed #${order.id.slice(0, 8).toUpperCase()}`,
-			html
+			html,
 		)
 	},
 
@@ -61,7 +61,7 @@ export const EmailService = {
 		await sendMail(
 			order.email,
 			`আহার — Your order is ${order.status}`,
-			html
+			html,
 		)
 	},
 
@@ -82,7 +82,7 @@ export const EmailService = {
 		await sendMail(
 			reservation.email,
 			`আহার — Reservation Confirmed #${reservation.id.slice(0, 8).toUpperCase()}`,
-			html
+			html,
 		)
 	},
 
@@ -100,7 +100,7 @@ export const EmailService = {
 		await sendMail(
 			reservation.email,
 			`আহার — Reservation ${reservation.status}`,
-			html
+			html,
 		)
 	},
 
@@ -118,7 +118,7 @@ export const EmailService = {
 		await sendMail(
 			invite.email,
 			`আহার — You've been invited as ${invite.role}`,
-			html
+			html,
 		)
 	},
 }

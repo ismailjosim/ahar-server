@@ -57,10 +57,15 @@ export const envVars = {
 	SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS as string,
 
 	// SSLCOMMERZ configuration
-	SSLCOMMERZ_STORE_ID: (process.env.SSLCOMMERZ_STORE_ID || process.env.SSL_STORE_ID) as string,
-	SSLCOMMERZ_STORE_PASS: (process.env.SSLCOMMERZ_STORE_PASS || process.env.SSL_STORE_PASS) as string,
+	SSLCOMMERZ_STORE_ID: (process.env.SSLCOMMERZ_STORE_ID ||
+		process.env.SSL_STORE_ID) as string,
+	SSLCOMMERZ_STORE_PASS: (process.env.SSLCOMMERZ_STORE_PASS ||
+		process.env.SSL_STORE_PASS) as string,
 	SSLCOMMERZ_IS_LIVE: (process.env.SSLCOMMERZ_IS_LIVE || 'false') as string,
-	FRONTEND_URL: (process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:3000') as string,
-	BACKEND_URL: (process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 4000}`) as string,
+	FRONTEND_URL: (process.env.FRONTEND_URL ||
+		process.env.CORS_ORIGIN ||
+		'http://localhost:3000') as string,
+	BACKEND_URL: (process.env.BACKEND_URL ||
+		`http://localhost:${process.env.PORT || 4000}`) as string,
 	HOST: (process.env.HOST || 'localhost') as string,
 }

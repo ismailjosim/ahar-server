@@ -41,7 +41,8 @@ const getInventoryItems = async (query: Record<string, unknown>) => {
 		limit: Number(query.limit || query.pageSize || 100),
 	})
 
-	const lowStockOnly = query.lowStockOnly === 'true' || query.lowStockOnly === true
+	const lowStockOnly =
+		query.lowStockOnly === 'true' || query.lowStockOnly === true
 
 	const [data, total] = await Promise.all([
 		prisma.inventoryItem.findMany({
@@ -56,7 +57,7 @@ const getInventoryItems = async (query: Record<string, unknown>) => {
 	let filteredData = data.map(toClient)
 	if (lowStockOnly) {
 		filteredData = filteredData.filter(
-			(item) => item && item.stock <= item.threshold
+			(item) => item && item.stock <= item.threshold,
 		)
 	}
 
@@ -190,9 +191,7 @@ interface OrderItemForInventory {
 	quantity: number
 }
 
-const adjustStockForOrder = async (
-	items: OrderItemForInventory[]
-) => {
+const adjustStockForOrder = async (items: OrderItemForInventory[]) => {
 	for (const item of items) {
 		// Simple name-based lookup — case insensitive, partial match
 		const invItem = await prisma.inventoryItem.findFirst({
@@ -216,7 +215,7 @@ const adjustStockForOrder = async (
 		await prisma.inventoryAudit.create({
 			data: {
 				inventoryItemId: invItem.id,
-				change: -(item.quantity),
+				change: -item.quantity,
 				previousStock: invItem.stock,
 				nextStock: newStock,
 				reason: `Auto-deducted: order item "${item.nameSnapshot}"`,

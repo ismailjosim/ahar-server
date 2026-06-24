@@ -184,9 +184,7 @@ const createReservation = async (
 	userId?: string,
 ) => {
 	// Support both field name conventions coming from the frontend.
-	const displayTime = String(
-		payload.displayTime || payload.time || '',
-	)
+	const displayTime = String(payload.displayTime || payload.time || '')
 
 	// 1. Must be in the future.
 	const reservationDate = parseReservationDate(displayTime)
@@ -203,18 +201,14 @@ const createReservation = async (
 	const reservation = await prisma.reservation.create({
 		data: {
 			customerName: String(
-				payload.customerName ||
-					payload.customer ||
-					'Guest',
+				payload.customerName || payload.customer || 'Guest',
 			),
 			phone: String(payload.phone || ''),
 			email: payload.email ? String(payload.email) : undefined,
 			guests: Number(payload.guests || 2),
 			reservationTime: reservationDate,
 			displayTime,
-			tableCode: String(
-				payload.tableCode || payload.table || 'TBD',
-			),
+			tableCode: String(payload.tableCode || payload.table || 'TBD'),
 			status: toStatus(String(payload.status || 'Pending')),
 			occasion: payload.occasion ? String(payload.occasion) : undefined,
 			notes:
@@ -235,7 +229,7 @@ const createReservation = async (
 		displayTime: reservation.displayTime,
 		tableCode: reservation.tableCode ?? undefined,
 	}).catch((err) =>
-		console.error('[Email] Reservation confirmation failed:', err)
+		console.error('[Email] Reservation confirmation failed:', err),
 	)
 
 	return toClient(reservation)
@@ -332,7 +326,7 @@ const updateReservation = async (id: string, payload: ReservationPayload) => {
 			id: reservation.id,
 			status: newStatus,
 		}).catch((err) =>
-			console.error('[Email] Reservation status update failed:', err)
+			console.error('[Email] Reservation status update failed:', err),
 		)
 	}
 

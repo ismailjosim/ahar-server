@@ -320,7 +320,7 @@ const createOrder = async (payload: CreateOrderPayload) => {
 			fulfillmentType: order.fulfillmentType,
 			paymentMethod: order.paymentMethod,
 		}).catch((err) =>
-			console.error('[Email] Order confirmation failed:', err)
+			console.error('[Email] Order confirmation failed:', err),
 		)
 	}
 
@@ -393,18 +393,13 @@ const updateOrderStatus = async (id: string, status: string) => {
 		'Delivered',
 		'Cancelled',
 	]
-	if (
-		NOTIFY_STATUSES.includes(status) &&
-		updated.email
-	) {
+	if (NOTIFY_STATUSES.includes(status) && updated.email) {
 		EmailService.sendOrderStatusUpdate({
 			customerName: updated.customerName,
 			email: updated.email,
 			id: updated.id,
 			status,
-		}).catch((err) =>
-			console.error('[Email] Status update failed:', err)
-		)
+		}).catch((err) => console.error('[Email] Status update failed:', err))
 	}
 
 	return toClient(updated)
