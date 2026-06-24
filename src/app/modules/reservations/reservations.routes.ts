@@ -17,6 +17,16 @@ router.post(
 	ReservationsController.createReservation,
 )
 
+// Protected — authenticated customer views their own reservations
+router.get('/my', requireAuth, ReservationsController.getMyReservations)
+
+// Protected — authenticated customer cancels their own reservation
+router.patch(
+	'/my/:id/cancel',
+	requireAuth,
+	ReservationsController.cancelMyReservation,
+)
+
 // Public — customers look up their own reservation by ID
 router.get('/:id', ReservationsController.getReservationById)
 

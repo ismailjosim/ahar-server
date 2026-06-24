@@ -9,6 +9,8 @@ import { SettingsValidation } from './settings.validation'
 
 const router = Router()
 
+router.get('/public', SettingsController.getPublicSettings)
+
 // manager+ can read full settings
 router.get(
 	'/',

@@ -65,10 +65,45 @@ const deleteReservation = catchAsync(async (req, res) => {
 	})
 })
 
+const getMyReservations = catchAsync(async (req, res) => {
+	const userId = req.user!.id
+	const result = await ReservationsService.getReservationsByUser(
+		userId,
+		req.query,
+	)
+	sendResponse(res, {
+		statusCode: StatusCode.OK,
+		success: true,
+		message: 'Your reservations.',
+		meta: {
+			page: result.page,
+			limit: result.limit,
+			total: result.total,
+		},
+		data: result.data,
+	})
+})
+
+const cancelMyReservation = catchAsync(async (req, res) => {
+	const userId = req.user!.id
+	const result = await ReservationsService.cancelMyReservation(
+		String(req.params.id),
+		userId,
+	)
+	sendResponse(res, {
+		statusCode: StatusCode.OK,
+		success: true,
+		message: 'Reservation cancelled.',
+		data: result,
+	})
+})
+
 export const ReservationsController = {
 	getReservations,
 	getReservationById,
 	createReservation,
 	updateReservation,
 	deleteReservation,
+	getMyReservations,
+	cancelMyReservation,
 }

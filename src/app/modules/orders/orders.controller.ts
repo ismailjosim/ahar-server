@@ -55,9 +55,26 @@ const updateOrderStatus = catchAsync(async (req, res) => {
 	})
 })
 
+const getMyOrders = catchAsync(async (req, res) => {
+	const userId = req.user!.id
+	const result = await OrdersService.getOrdersByUser(userId, req.query)
+	sendResponse(res, {
+		statusCode: StatusCode.OK,
+		success: true,
+		message: 'Your orders.',
+		meta: {
+			page: result.page,
+			limit: result.limit,
+			total: result.total,
+		},
+		data: result.data,
+	})
+})
+
 export const OrdersController = {
 	getOrders,
 	getOrderById,
 	createOrder,
 	updateOrderStatus,
+	getMyOrders,
 }

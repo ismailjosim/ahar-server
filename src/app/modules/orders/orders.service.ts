@@ -166,12 +166,8 @@ const createOrder = async (payload: CreateOrderPayload) => {
 	const settings = await prisma.restaurantSettings.findFirst({
 		where: { id: 'default' },
 	})
-	const deliveryFee =
-		payload.fulfillmentType === 'delivery'
-			? (settings?.deliveryFee ?? 80)
-			: 0
-	const vatRate = settings?.vatRate ?? 0.05
-	const serviceChargeRate = settings?.serviceChargeRate ?? 0.1
+	const vatRate = settings ? settings.vatRate / 100 : 0.05
+	const serviceChargeRate = settings ? settings.serviceChargeRate / 100 : 0.1
 
 	const jsonInput = (value: unknown) =>
 		value as OrderItemUncheckedCreateWithoutOrderInput['selectedVariant']
@@ -260,6 +256,14 @@ const createOrder = async (payload: CreateOrderPayload) => {
 				data: { usedCount: { increment: 1 } },
 			})
 		}
+	}
+
+	let deliveryFee = 0
+	if (payload.fulfillmentType === 'delivery') {
+		const fee = settings?.deliveryFee ?? 80
+		const freeMin = settings?.freeDeliveryMin ?? 0
+		const isFree = freeMin > 0 && subtotal >= freeMin
+		deliveryFee = isFree ? 0 : fee
 	}
 
 	const taxable = subtotal - discount
@@ -405,9 +409,33 @@ const updateOrderStatus = async (id: string, status: string) => {
 	return toClient(updated)
 }
 
+const getOrdersByUser = async (
+	userId: string,
+	query: Record<string, unknown>,
+) => {
+	const { page, limit, skip } = calculatePagination({
+		page: Number(query.page || 1),
+		limit: Number(query.limit || query.pageSize || 5),
+	})
+
+	const [data, total] = await Promise.all([
+		prisma.order.findMany({
+			where: { userId },
+			orderBy: { createdAt: 'desc' },
+			skip,
+			take: limit,
+			include: { items: true },
+		}),
+		prisma.order.count({ where: { userId } }),
+	])
+
+	return { data: data.map(toClient), total, page, limit }
+}
+
 export const OrdersService = {
 	getOrders,
 	getOrderById,
 	createOrder,
 	updateOrderStatus,
+	getOrdersByUser,
 }

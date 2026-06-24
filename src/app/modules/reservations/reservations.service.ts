@@ -339,10 +339,61 @@ const deleteReservation = async (id: string) => {
 	return null
 }
 
+const getReservationsByUser = async (
+	userId: string,
+	query: Record<string, unknown>,
+) => {
+	const { page, limit, skip } = calculatePagination({
+		page: Number(query.page || 1),
+		limit: Number(query.limit || query.pageSize || 5),
+	})
+
+	const [data, total] = await Promise.all([
+		prisma.reservation.findMany({
+			where: { userId },
+			orderBy: { createdAt: 'desc' },
+			skip,
+			take: limit,
+		}),
+		prisma.reservation.count({ where: { userId } }),
+	])
+
+	return { data: data.map(toClient), total, page, limit }
+}
+
+const cancelMyReservation = async (id: string, userId: string) => {
+	const reservation = await prisma.reservation.findUnique({ where: { id } })
+	if (!reservation) {
+		throw new AppError(StatusCode.NOT_FOUND, 'Reservation not found')
+	}
+	if (reservation.userId !== userId) {
+		throw new AppError(
+			StatusCode.FORBIDDEN,
+			'You do not have permission to cancel this reservation.',
+		)
+	}
+	const currentStatus = fromStatus(reservation.status)
+	if (!['Pending', 'Approved'].includes(currentStatus)) {
+		throw new AppError(
+			StatusCode.BAD_REQUEST,
+			`Cannot cancel a reservation with status "${currentStatus}".`,
+		)
+	}
+
+	const updated = await prisma.reservation.update({
+		where: { id },
+		data: { status: ReservationStatus.CANCELLED },
+	})
+
+	return toClient(updated)
+}
+
 export const ReservationsService = {
 	getReservations,
 	getReservationById,
 	createReservation,
 	updateReservation,
 	deleteReservation,
+	getReservationsByUser,
+	cancelMyReservation,
 }

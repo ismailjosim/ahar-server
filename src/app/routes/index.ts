@@ -9,6 +9,7 @@ import { PaymentsRoutes } from '@/modules/payments/payments.routes'
 import { ReportsRoutes } from '@/modules/reports/reports.routes'
 import { ReservationsRoutes } from '@/modules/reservations/reservations.routes'
 import { SettingsRoutes } from '@/modules/settings/settings.routes'
+import { StaffRoutes } from '@/modules/staff/staff.routes'
 
 const router = Router()
 
@@ -48,6 +49,10 @@ const moduleRoutes = [
 	{
 		path: '/reports',
 		route: ReportsRoutes,
+	},
+	{
+		path: '/staff',
+		route: StaffRoutes,
 	},
 ]
 

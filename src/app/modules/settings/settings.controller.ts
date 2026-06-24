@@ -14,6 +14,31 @@ const getSettings = catchAsync(async (req, res) => {
 	})
 })
 
+const getPublicSettings = catchAsync(async (req, res) => {
+	const settings = await SettingsService.getSettings()
+	sendResponse(res, {
+		statusCode: StatusCode.OK,
+		success: true,
+		message: 'Public settings retrieved successfully',
+		data: {
+			restaurantName: settings.restaurantName,
+			supportPhone: settings.supportPhone,
+			address: settings.address,
+			openingTime: settings.openingTime,
+			closingTime: settings.closingTime,
+			deliveryFee: settings.deliveryFee,
+			freeDeliveryMin: settings.freeDeliveryMin,
+			vatRate: settings.vatRate,
+			serviceChargeRate: settings.serviceChargeRate,
+			acceptCod: settings.acceptCod,
+			acceptBkash: settings.acceptBkash,
+			acceptNagad: settings.acceptNagad,
+			acceptSslcommerz: settings.acceptSslcommerz,
+			maxTablesPerSlot: settings.maxTablesPerSlot,
+		},
+	})
+})
+
 const updateSettings = catchAsync(async (req, res) => {
 	const result = await SettingsService.updateSettings(req.body)
 	sendResponse(res, {
@@ -26,5 +51,6 @@ const updateSettings = catchAsync(async (req, res) => {
 
 export const SettingsController = {
 	getSettings,
+	getPublicSettings,
 	updateSettings,
 }

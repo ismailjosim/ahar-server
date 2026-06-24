@@ -17,6 +17,9 @@ router.post(
 	OrdersController.createOrder,
 )
 
+// Protected — authenticated customer views their own orders
+router.get('/my', requireAuth, OrdersController.getMyOrders)
+
 // Public — order tracking by ID (customer looks up their own order)
 router.get('/:id', OrdersController.getOrderById)
 
