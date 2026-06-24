@@ -1,5 +1,7 @@
 import path from 'node:path'
+
 import ejs from 'ejs'
+
 import { transporter } from '@/config/email.config'
 import { envVars } from '@/config/env'
 

@@ -1,17 +1,17 @@
 import { prisma } from '@/config/prisma.config'
 import AppError from '@/helpers/AppError'
+import { EmailService } from '@/shared/email.service'
 import { calculatePagination } from '@/utils/paginationHelper'
 import StatusCode from '@/utils/statusCode'
 
 import { OrderStatus, PaymentStatus } from '../../../generated/prisma/enums'
 import type { OrderItemUncheckedCreateWithoutOrderInput } from '../../../generated/prisma/models/OrderItem'
+import { InventoryService } from '../inventory/inventory.service'
 import {
 	fromDbOrderStatus,
 	fromDbPaymentStatus,
 	toDbOrderStatus,
 } from './orders.utils'
-import { InventoryService } from '../inventory/inventory.service'
-import { EmailService } from '@/shared/email.service'
 
 interface CreateOrderItemInput {
 	menuItemId?: string
