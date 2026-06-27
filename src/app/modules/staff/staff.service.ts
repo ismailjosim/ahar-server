@@ -6,15 +6,17 @@ import { EmailService } from '@/shared/email.service'
 import { calculatePagination } from '@/utils/paginationHelper'
 import StatusCode from '@/utils/statusCode'
 
+import { UserRole, UserStatus } from '../../../generated/prisma/enums'
+
 export const StaffService = {
 	async listStaff(query: { page?: number; pageSize?: number }) {
 		const { page, limit, skip } = calculatePagination(query)
-		const NON_CUSTOMER_ROLES = [
-			'cashier',
-			'kitchen',
-			'manager',
-			'owner',
-			'super_admin',
+		const NON_CUSTOMER_ROLES: UserRole[] = [
+			'CASHIER',
+			'KITCHEN',
+			'MANAGER',
+			'OWNER',
+			'SUPER_ADMIN',
 		]
 
 		const [data, total] = await prisma.$transaction([
@@ -29,14 +31,24 @@ export const StaffService = {
 					email: true,
 					phone: true,
 					role: true,
-					isActive: true,
+					status: true,
 					createdAt: true,
 				},
 			}),
 			prisma.user.count({ where: { role: { in: NON_CUSTOMER_ROLES } } }),
 		])
 
-		return { data, total, page, limit }
+		const formattedData = data.map((user) => ({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			phone: user.phone,
+			role: user.role,
+			isActive: user.status === UserStatus.ACTIVE,
+			createdAt: user.createdAt,
+		}))
+
+		return { data: formattedData, total, page, limit }
 	},
 
 	async updateStaffRole(id: string, role: string, requesterId: string) {
@@ -52,14 +64,19 @@ export const StaffService = {
 			throw new AppError(StatusCode.NOT_FOUND, 'User not found.')
 		}
 
-		if (user.role === 'super_admin' && role !== 'super_admin') {
+		const upperRole = role.toUpperCase() as UserRole
+
+		if (user.role === UserRole.SUPER_ADMIN && upperRole !== UserRole.SUPER_ADMIN) {
 			throw new AppError(
 				StatusCode.FORBIDDEN,
 				'Cannot demote another super admin.',
 			)
 		}
 
-		return prisma.user.update({ where: { id }, data: { role } })
+		return prisma.user.update({
+			where: { id },
+			data: { role: upperRole },
+		})
 	},
 
 	async setStaffActive(id: string, isActive: boolean, requesterId: string) {
@@ -75,7 +92,12 @@ export const StaffService = {
 			throw new AppError(StatusCode.NOT_FOUND, 'User not found.')
 		}
 
-		return prisma.user.update({ where: { id }, data: { isActive } })
+		const status = isActive ? UserStatus.ACTIVE : UserStatus.INACTIVE
+
+		return prisma.user.update({
+			where: { id },
+			data: { status },
+		})
 	},
 
 	async inviteStaff(email: string, role: string, inviterName: string) {
@@ -170,7 +192,7 @@ export const StaffService = {
 		if (user) {
 			await prisma.user.update({
 				where: { email: invite.email },
-				data: { role: invite.role },
+				data: { role: invite.role.toUpperCase() as UserRole },
 			})
 		}
 

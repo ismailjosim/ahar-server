@@ -167,9 +167,7 @@ async function getDashboardStats() {
 		prisma.menuItem.count({ where: { isAvailable: true } }),
 
 		// Low stock: fetch all and count in JS (Prisma field-to-field limitation)
-		prisma.inventoryItem.findMany({
-			where: { stock: { lte: prisma.raw('threshold') } },
-		}),
+		prisma.inventoryItem.findMany(),
 
 		prisma.order.findMany({
 			orderBy: { createdAt: 'desc' },
@@ -219,6 +217,7 @@ async function getDashboardStats() {
 		by: ['createdAt'],
 		_sum: { total: true },
 		where: { createdAt: { gte: weekStart }, status: 'DELIVERED' },
+		orderBy: { createdAt: 'asc' },
 	})
 
 	return {
@@ -301,6 +300,7 @@ async function getSummaryStats(from?: string, to?: string) {
 			by: ['status'],
 			_count: { id: true },
 			where: dateFilter,
+			orderBy: { status: 'asc' },
 		}),
 
 		// Payments grouped by method
@@ -309,6 +309,7 @@ async function getSummaryStats(from?: string, to?: string) {
 			_sum: { amount: true },
 			_count: { id: true },
 			where: dateFilter,
+			orderBy: { method: 'asc' },
 		}),
 	])
 
