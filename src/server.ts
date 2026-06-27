@@ -2,9 +2,9 @@ import { type Server } from 'node:http'
 
 import { envVars } from '@/config/env'
 import { prisma } from '@/config/prisma.config'
-import { seedMenu } from '@/seed/menu.seed'
-import { ensureSuperAdmin } from '@/seed/superAdmin.seed'
 
+// import { seedMenu } from '@/seed/menu.seed'
+// import { ensureSuperAdmin } from '@/seed/superAdmin.seed'
 import app from './app'
 
 let server: Server
@@ -18,13 +18,11 @@ async function bootstrap() {
 	try {
 		await prisma.$connect()
 		console.log('Database connected successfully')
-		await ensureSuperAdmin()
-		await seedMenu()
+		// await ensureSuperAdmin()
+		// await seedMenu()
 
-		server = app.listen(envVars.PORT, envVars.HOST, () => {
-			console.log(
-				`Server is running on http://${envVars.HOST}:${envVars.PORT}`,
-			)
+		server = app.listen(envVars.PORT, () => {
+			console.log(`Server is running on PORT: ${envVars.PORT}`)
 		})
 
 		server.on('close', () => {

@@ -7,7 +7,7 @@ model User {
   emailVerified Boolean
   image         String?
   phone         String?    @unique
-  role          String     @default("customer")
+  role          UserRole   @default(CUSTOMER)
   status        UserStatus @default(ACTIVE)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -19,12 +19,6 @@ model User {
   reviews      Review[]
 
   @@map("user")
-}
-
-enum UserStatus {
-  ACTIVE
-  BLOCKED
-  INACTIVE
 }
 
 model Session {

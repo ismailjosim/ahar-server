@@ -4,7 +4,6 @@ import ejs from 'ejs'
 
 import { transporter } from '@/config/email.config'
 import { envVars } from '@/config/env'
-
 const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'app', 'email-templates')
 
 async function renderTemplate(
@@ -15,12 +14,12 @@ async function renderTemplate(
 }
 
 async function sendMail(to: string, subject: string, html: string) {
-	if (!envVars.SMTP_USER) {
+	if (!envVars.EMAIL_SENDER.SMTP_USER) {
 		console.warn('[Email] SMTP not configured. Skipping email:', subject)
 		return
 	}
 	await transporter.sendMail({
-		from: envVars.SMTP_FROM,
+		from: envVars.EMAIL_SENDER.SMTP_FROM,
 		to,
 		subject,
 		html,

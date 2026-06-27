@@ -1,5 +1,17 @@
-// UserRole enum removed — role is now a plain String on the User model.
-// Lowercase string values: "customer" | "cashier" | "kitchen" | "manager" | "owner" | "super_admin"
+enum UserRole {
+  CUSTOMER
+  CASHIER
+  KITCHEN
+  MANAGER
+  OWNER
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  INACTIVE
+}
 
 enum OrderStatus {
   PLACED

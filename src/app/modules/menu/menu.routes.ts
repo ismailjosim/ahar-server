@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
 import { upload } from '@/config/multer.config'
+import checkAuth from '@/middlewares/checkAuth'
 // import { requireAuth } from '@/middlewares/requireAuth'
 // import { requireRole } from '@/middlewares/requireRole'
 import validateRequest from '@/middlewares/validateRequest'
@@ -17,8 +18,7 @@ router.get('/:id', MenuController.getMenuItemById)
 // Protected — manager+ to create / edit, owner+ to delete
 router.post(
 	'/',
-	// requireAuth,
-	// requireRole('manager'),
+	checkAuth(),
 	validateRequest(MenuValidation.createMenuItem),
 	MenuController.createMenuItem,
 )

@@ -10,7 +10,7 @@ const app: Application = express()
 
 app.use(
 	cors({
-		origin: envVars.CORS_ORIGIN,
+		origin: envVars.FRONTEND_URL,
 		credentials: true,
 	}),
 )
