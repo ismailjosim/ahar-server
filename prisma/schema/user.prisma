@@ -1,16 +1,16 @@
 // better-auth compatible User table — passwords live in Account, not here.
 // Role is a plain string: "customer" | "cashier" | "kitchen" | "manager" | "owner" | "super_admin"
 model User {
-  id            String    @id
+  id            String     @id
   name          String
-  email         String    @unique
+  email         String     @unique
   emailVerified Boolean
   image         String?
-  phone         String?   @unique
-  role          String    @default("customer")
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  phone         String?    @unique
+  role          String     @default("customer")
+  status        UserStatus @default(ACTIVE)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   sessions     Session[]
   accounts     Account[]
@@ -19,6 +19,12 @@ model User {
   reviews      Review[]
 
   @@map("user")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  INACTIVE
 }
 
 model Session {

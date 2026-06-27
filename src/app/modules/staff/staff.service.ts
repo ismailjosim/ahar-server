@@ -9,7 +9,13 @@ import StatusCode from '@/utils/statusCode'
 export const StaffService = {
 	async listStaff(query: { page?: number; pageSize?: number }) {
 		const { page, limit, skip } = calculatePagination(query)
-		const NON_CUSTOMER_ROLES = ['cashier', 'kitchen', 'manager', 'owner', 'super_admin']
+		const NON_CUSTOMER_ROLES = [
+			'cashier',
+			'kitchen',
+			'manager',
+			'owner',
+			'super_admin',
+		]
 
 		const [data, total] = await prisma.$transaction([
 			prisma.user.findMany({
@@ -35,7 +41,10 @@ export const StaffService = {
 
 	async updateStaffRole(id: string, role: string, requesterId: string) {
 		if (id === requesterId) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'You cannot change your own role.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'You cannot change your own role.',
+			)
 		}
 
 		const user = await prisma.user.findUnique({ where: { id } })
@@ -44,7 +53,10 @@ export const StaffService = {
 		}
 
 		if (user.role === 'super_admin' && role !== 'super_admin') {
-			throw new AppError(StatusCode.FORBIDDEN, 'Cannot demote another super admin.')
+			throw new AppError(
+				StatusCode.FORBIDDEN,
+				'Cannot demote another super admin.',
+			)
 		}
 
 		return prisma.user.update({ where: { id }, data: { role } })
@@ -52,7 +64,10 @@ export const StaffService = {
 
 	async setStaffActive(id: string, isActive: boolean, requesterId: string) {
 		if (id === requesterId) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'You cannot deactivate your own account.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'You cannot deactivate your own account.',
+			)
 		}
 
 		const user = await prisma.user.findUnique({ where: { id } })
@@ -66,19 +81,32 @@ export const StaffService = {
 	async inviteStaff(email: string, role: string, inviterName: string) {
 		const existing = await prisma.user.findUnique({ where: { email } })
 		if (existing) {
-			throw new AppError(StatusCode.CONFLICT, 'A user with this email already exists.')
+			throw new AppError(
+				StatusCode.CONFLICT,
+				'A user with this email already exists.',
+			)
 		}
 
-		const pending = await prisma.staffInvite.findUnique({ where: { email } })
+		const pending = await prisma.staffInvite.findUnique({
+			where: { email },
+		})
 		if (pending && pending.expiresAt > new Date()) {
-			throw new AppError(StatusCode.CONFLICT, 'An invite has already been sent to this email.')
+			throw new AppError(
+				StatusCode.CONFLICT,
+				'An invite has already been sent to this email.',
+			)
 		}
 
 		const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
 		const invite = await prisma.staffInvite.upsert({
 			where: { email },
-			update: { role, token: crypto.randomUUID(), expiresAt, usedAt: null },
+			update: {
+				role,
+				token: crypto.randomUUID(),
+				expiresAt,
+				usedAt: null,
+			},
 			create: { email, role, expiresAt, token: crypto.randomUUID() },
 		})
 
@@ -89,7 +117,11 @@ export const StaffService = {
 			inviterName,
 		})
 
-		return { email: invite.email, role: invite.role, expiresAt: invite.expiresAt }
+		return {
+			email: invite.email,
+			role: invite.role,
+			expiresAt: invite.expiresAt,
+		}
 	},
 
 	async acceptInvite(token: string) {
@@ -98,10 +130,16 @@ export const StaffService = {
 			throw new AppError(StatusCode.NOT_FOUND, 'Invalid invite link.')
 		}
 		if (invite.usedAt) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'This invite has already been used.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'This invite has already been used.',
+			)
 		}
 		if (invite.expiresAt < new Date()) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'This invite has expired.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'This invite has expired.',
+			)
 		}
 
 		return { email: invite.email, role: invite.role }
@@ -113,14 +151,22 @@ export const StaffService = {
 			throw new AppError(StatusCode.NOT_FOUND, 'Invalid invite link.')
 		}
 		if (invite.usedAt) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'This invite has already been used.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'This invite has already been used.',
+			)
 		}
 		if (invite.expiresAt < new Date()) {
-			throw new AppError(StatusCode.BAD_REQUEST, 'This invite has expired.')
+			throw new AppError(
+				StatusCode.BAD_REQUEST,
+				'This invite has expired.',
+			)
 		}
 
 		// Find user by email and update their role if found
-		const user = await prisma.user.findUnique({ where: { email: invite.email } })
+		const user = await prisma.user.findUnique({
+			where: { email: invite.email },
+		})
 		if (user) {
 			await prisma.user.update({
 				where: { email: invite.email },
@@ -128,6 +174,9 @@ export const StaffService = {
 			})
 		}
 
-		await prisma.staffInvite.update({ where: { token }, data: { usedAt: new Date() } })
+		await prisma.staffInvite.update({
+			where: { token },
+			data: { usedAt: new Date() },
+		})
 	},
 }

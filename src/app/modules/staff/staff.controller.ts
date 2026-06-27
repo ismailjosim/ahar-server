@@ -15,7 +15,11 @@ const listStaff = catchAsync(async (req, res) => {
 })
 
 const updateStaffRole = catchAsync(async (req, res) => {
-	const updated = await StaffService.updateStaffRole(String(req.params.id), req.body.role, req.user!.id)
+	const updated = await StaffService.updateStaffRole(
+		String(req.params.id),
+		req.body.role,
+		req.user!.id,
+	)
 	sendResponse(res, {
 		statusCode: StatusCode.OK,
 		success: true,
@@ -25,7 +29,11 @@ const updateStaffRole = catchAsync(async (req, res) => {
 })
 
 const toggleActive = catchAsync(async (req, res) => {
-	const updated = await StaffService.setStaffActive(String(req.params.id), req.body.isActive, req.user!.id)
+	const updated = await StaffService.setStaffActive(
+		String(req.params.id),
+		req.body.isActive,
+		req.user!.id,
+	)
 	sendResponse(res, {
 		statusCode: StatusCode.OK,
 		success: true,
@@ -35,7 +43,11 @@ const toggleActive = catchAsync(async (req, res) => {
 })
 
 const inviteStaff = catchAsync(async (req, res) => {
-	const result = await StaffService.inviteStaff(req.body.email, req.body.role, req.user!.name)
+	const result = await StaffService.inviteStaff(
+		req.body.email,
+		req.body.role,
+		req.user!.name,
+	)
 	sendResponse(res, {
 		statusCode: StatusCode.CREATED,
 		success: true,
