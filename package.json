@@ -11,7 +11,7 @@
 		"postinstall": "prisma generate",
 		"prisma:generate": "pnpm exec prisma generate",
 		"prisma:migrate": "pnpm exec prisma migrate dev",
-		"prisma:studio": "pnpm exec prisma studio",
+		"studio": "pnpm exec prisma studio",
 		"check": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",

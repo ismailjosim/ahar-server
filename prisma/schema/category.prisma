@@ -1,0 +1,26 @@
+model Category {
+    id String @id @default(cuid())
+
+    name String @unique
+    slug String @unique
+
+    description String? @db.Text
+    image       String?
+    icon        String?
+
+    status CategoryStatus @default(ACTIVE)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    items MenuItem[]
+
+    @@map("category")
+}
+
+enum CategoryStatus {
+    ACTIVE
+    INACTIVE
+    ARCHIVED
+}

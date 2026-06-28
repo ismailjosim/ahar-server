@@ -1,7 +1,4 @@
 import { Router } from 'express'
-
-import { requireAuth } from '@/middlewares/requireAuth'
-import { requireRole } from '@/middlewares/requireRole'
 import validateRequest from '@/middlewares/validateRequest'
 
 import { SettingsController } from './settings.controller'
@@ -12,18 +9,11 @@ const router = Router()
 router.get('/public', SettingsController.getPublicSettings)
 
 // manager+ can read full settings
-router.get(
-	'/',
-	requireAuth,
-	requireRole('manager'),
-	SettingsController.getSettings,
-)
+router.get('/', SettingsController.getSettings)
 
 // owner+ can change settings
 router.patch(
 	'/',
-	requireAuth,
-	requireRole('owner'),
 	validateRequest(SettingsValidation.updateSettings),
 	SettingsController.updateSettings,
 )

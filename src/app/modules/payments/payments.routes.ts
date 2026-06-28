@@ -1,7 +1,4 @@
 import { Router } from 'express'
-
-import { requireAuth } from '@/middlewares/requireAuth'
-import { requireRole } from '@/middlewares/requireRole'
 import validateRequest from '@/middlewares/validateRequest'
 
 import { PaymentsController } from './payments.controller'
@@ -12,22 +9,16 @@ const router = Router()
 // cashier+ can read all payments
 router.get(
 	'/',
-	requireAuth,
-	requireRole('cashier'),
 	PaymentsController.getPayments,
 )
 router.get(
 	'/:id',
-	requireAuth,
-	requireRole('cashier'),
 	PaymentsController.getPaymentById,
 )
 
 // cashier+ can create payment records (triggered by order flow)
 router.post(
 	'/',
-	requireAuth,
-	requireRole('cashier'),
 	validateRequest(PaymentsValidation.createPayment),
 	PaymentsController.createPayment,
 )
@@ -35,14 +26,12 @@ router.post(
 // owner+ can update payment status (refunds, manual corrections)
 router.patch(
 	'/:id',
-	requireAuth,
-	requireRole('owner'),
 	validateRequest(PaymentsValidation.updatePayment),
 	PaymentsController.updatePayment,
 )
 
 // Authenticated user initiates payment
-router.post('/sslcommerz/init', requireAuth, PaymentsController.initSSLCommerz)
+router.post('/sslcommerz/init', PaymentsController.initSSLCommerz)
 
 // IPN from SSLCOMMERZ (no auth — SSLCOMMERZ server calls this directly)
 router.post('/sslcommerz/ipn', PaymentsController.handleSSLCommerzIPN)

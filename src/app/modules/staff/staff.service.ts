@@ -66,7 +66,10 @@ export const StaffService = {
 
 		const upperRole = role.toUpperCase() as UserRole
 
-		if (user.role === UserRole.SUPER_ADMIN && upperRole !== UserRole.SUPER_ADMIN) {
+		if (
+			user.role === UserRole.SUPER_ADMIN &&
+			upperRole !== UserRole.SUPER_ADMIN
+		) {
 			throw new AppError(
 				StatusCode.FORBIDDEN,
 				'Cannot demote another super admin.',

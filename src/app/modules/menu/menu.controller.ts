@@ -8,6 +8,7 @@ import StatusCode from '@/utils/statusCode'
 import { MenuService } from './menu.service'
 
 const createMenuItem = catchAsync(async (req, res) => {
+	console.log('req.body', req.body)
 	const result = await MenuService.createMenuItem(req.body)
 	sendResponse(res, {
 		statusCode: StatusCode.CREATED,
