@@ -53,6 +53,9 @@ importers:
       pg:
         specifier: ^8.21.0
         version: 8.22.0
+      slugify:
+        specifier: ^1.6.9
+        version: 1.6.9
       sslcommerz-lts:
         specifier: ^1.2.0
         version: 1.2.0
@@ -1711,6 +1714,10 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
+  slugify@1.6.9:
+    resolution: {integrity: sha512-vZ7rfeehZui7wQs438JXBckYLkIIdfHOXsaVEUMyS5fHo1483l1bMdo0EDSWYclY0yZKFOipDy4KHuKs6ssvdg==}
+    engines: {node: '>=8.0.0'}
+
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -3358,6 +3365,8 @@ snapshots:
   signal-exit@3.0.7: {}
 
   signal-exit@4.1.0: {}
+
+  slugify@1.6.9: {}
 
   split2@4.2.0: {}
 

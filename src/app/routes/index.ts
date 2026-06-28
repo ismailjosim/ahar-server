@@ -10,6 +10,7 @@ import { ReportsRoutes } from '@/modules/reports/reports.routes'
 import { ReservationsRoutes } from '@/modules/reservations/reservations.routes'
 import { SettingsRoutes } from '@/modules/settings/settings.routes'
 import { StaffRoutes } from '@/modules/staff/staff.routes'
+import { CategoryRoutes } from '@/modules/category/category.routes'
 
 const router = Router()
 
@@ -21,6 +22,10 @@ const moduleRoutes = [
 	{
 		path: '/menu',
 		route: MenuRoutes,
+	},
+	{
+		path: '/category',
+		route: CategoryRoutes,
 	},
 	{
 		path: '/orders',

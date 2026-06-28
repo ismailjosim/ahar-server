@@ -1,8 +1,25 @@
-import { Router } from 'express'
-import { CategoryController } from './category.controller'
+import { z } from 'zod'
 
-const router = Router()
+const createCategory = z.object({
+    body: z.object({
+        name: z.string().min(1, 'Category name is required'),
+        description: z.string().optional(),
+        image: z.string().url().optional(),
+        icon: z.string().optional(),
+        status: z
+            .enum(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
+            .optional(),
+    }),
+})
 
-router.get('/', CategoryController.getCategories)
+const updateCategory = z.object({
+    params: z.object({
+        id: z.string().min(1),
+    }),
+    body: createCategory.shape.body.partial(),
+})
 
-export default router
+export const CategoryValidation = {
+    createCategory,
+    updateCategory,
+}
