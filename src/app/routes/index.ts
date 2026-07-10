@@ -1,5 +1,6 @@
 import { Router } from 'express'
 
+import { CategoryRoutes } from '@/modules/category/category.routes'
 import { HealthRoutes } from '@/modules/health/health.routes'
 import { InventoryRoutes } from '@/modules/inventory/inventory.routes'
 import { MenuRoutes } from '@/modules/menu/menu.routes'
@@ -10,7 +11,6 @@ import { ReportsRoutes } from '@/modules/reports/reports.routes'
 import { ReservationsRoutes } from '@/modules/reservations/reservations.routes'
 import { SettingsRoutes } from '@/modules/settings/settings.routes'
 import { StaffRoutes } from '@/modules/staff/staff.routes'
-import { CategoryRoutes } from '@/modules/category/category.routes'
 
 const router = Router()
 

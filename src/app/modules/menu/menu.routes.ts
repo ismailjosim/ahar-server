@@ -1,13 +1,10 @@
 import { Router } from 'express'
 
-import checkAuth from '@/middlewares/checkAuth'
-
+import { fileUploader } from '@/config/multer.config'
 import validateRequest from '@/middlewares/validateRequest'
 
 import { MenuController } from './menu.controller'
-import { MenuValidation } from './menu.validation'
-import { UserRole } from '@/generated/prisma/enums'
-import { fileUploader } from '@/config/multer.config'
+import { MenuItemValidation } from './menu.validation'
 
 const router = Router()
 
@@ -19,22 +16,18 @@ router.get('/:id', MenuController.getMenuItemById)
 router.post(
 	'/create',
 	// checkAuth(UserRole.MANAGER, UserRole.OWNER, UserRole.CUSTOMER),
-	fileUploader.multerUpload.single('file'),
-	validateRequest(MenuValidation.createMenuItem),
+	// fileUploader.multerUpload.single('file'),
+	validateRequest(MenuItemValidation.createMenuItem),
 	MenuController.createMenuItem,
 )
 router.patch(
 	'/:id',
-	validateRequest(MenuValidation.updateMenuItem),
+	validateRequest(MenuItemValidation.updateMenuItem),
 	MenuController.updateMenuItem,
 )
-router.delete(
-	'/:id',
 
-	MenuController.deleteMenuItem,
-)
+router.delete('/:id', MenuController.deleteMenuItem)
 
-// Protected — manager+ to upload/replace the image for a menu item
 router.post(
 	'/:id/image',
 	fileUploader.multerUpload.single('file'),

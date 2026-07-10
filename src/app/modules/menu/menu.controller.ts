@@ -9,12 +9,12 @@ import { MenuService } from './menu.service'
 
 const createMenuItem = catchAsync(async (req, res) => {
 	console.log('req.body', req.body)
-	const result = await MenuService.createMenuItem(req.body)
+	// const result = await MenuService.createMenuItem(req.body)
 	sendResponse(res, {
 		statusCode: StatusCode.CREATED,
 		success: true,
 		message: 'Menu item created successfully',
-		data: result,
+		data: null,
 	})
 })
 
