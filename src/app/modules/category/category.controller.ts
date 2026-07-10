@@ -1,12 +1,10 @@
 import type { Request, Response } from 'express'
 
-import AppError from '@/helpers/AppError'
 import catchAsync from '@/shared/catchAsync'
 import sendResponse from '@/shared/sendResponse'
 import StatusCode from '@/utils/statusCode'
+
 import { CategoryService } from './category.service'
-
-
 
 const createCategory = catchAsync(async (req: Request, res: Response) => {
 	const result = await CategoryService.createCategory(req)
@@ -32,9 +30,7 @@ const getCategories = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getCategoryById = catchAsync(async (req: Request, res: Response) => {
-	const result = await CategoryService.getCategoryById(
-		String(req.params.id),
-	)
+	const result = await CategoryService.getCategoryById(String(req.params.id))
 
 	sendResponse(res, {
 		statusCode: StatusCode.OK,
@@ -58,7 +54,6 @@ const updateCategory = catchAsync(async (req: Request, res) => {
 	})
 })
 
-
 const deleteCategory = catchAsync(async (req: Request, res: Response) => {
 	await CategoryService.deleteCategory(String(req.params.id))
 
@@ -69,8 +64,6 @@ const deleteCategory = catchAsync(async (req: Request, res: Response) => {
 		data: null,
 	})
 })
-
-
 
 export const CategoryController = {
 	createCategory,

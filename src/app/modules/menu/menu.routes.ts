@@ -8,30 +8,31 @@ import { MenuItemValidation } from './menu.validation'
 
 const router = Router()
 
-// Public — anyone can browse the menu
+// Public Routes
 router.get('/', MenuController.getMenuItems)
 router.get('/:id', MenuController.getMenuItemById)
 
-// Protected — manager+ to create / edit, owner+ to delete
+// Protected Routes
 router.post(
 	'/create',
-	// checkAuth(UserRole.MANAGER, UserRole.OWNER, UserRole.CUSTOMER),
-	// fileUploader.multerUpload.single('file'),
+	// checkAuth(UserRole.MANAGER, UserRole.OWNER),
+	fileUploader.multerUpload.single('file'),
 	validateRequest(MenuItemValidation.createMenuItem),
 	MenuController.createMenuItem,
 )
+
 router.patch(
 	'/:id',
+	// checkAuth(UserRole.MANAGER, UserRole.OWNER),
+	fileUploader.multerUpload.single('file'),
 	validateRequest(MenuItemValidation.updateMenuItem),
 	MenuController.updateMenuItem,
 )
 
-router.delete('/:id', MenuController.deleteMenuItem)
-
-router.post(
-	'/:id/image',
-	fileUploader.multerUpload.single('file'),
-	MenuController.uploadImage,
+router.delete(
+	'/:id',
+	// checkAuth(UserRole.OWNER),
+	MenuController.deleteMenuItem,
 )
 
 export const MenuRoutes = router

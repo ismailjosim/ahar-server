@@ -1,13 +1,13 @@
+import crypto from 'crypto'
+import { Request } from 'express'
+import slugify from 'slugify'
+
+import { deleteFromCloudinary } from '@/config/multer.config'
 import { prisma } from '@/config/prisma.config'
+import type { CategoryWhereInput } from '@/generated/prisma/models/Category'
 import AppError from '@/helpers/AppError'
 import { calculatePagination } from '@/utils/paginationHelper'
 import StatusCode from '@/utils/statusCode'
-import slugify from 'slugify'
-import type { CategoryWhereInput } from '@/generated/prisma/models/Category'
-import { Request } from 'express'
-import crypto from 'crypto'
-import { deleteFromCloudinary } from '@/config/multer.config'
-
 
 const createCategory = async (req: Request) => {
 	const payload = req.body
@@ -46,37 +46,35 @@ const getCategories = async (query: Record<string, unknown>) => {
 		limit: Number(query.limit || query.pageSize || 20),
 	})
 
-	const search =
-		typeof query.search === 'string' ? query.search : undefined
+	const search = typeof query.search === 'string' ? query.search : undefined
 
-	const status =
-		typeof query.status === 'string' ? query.status : undefined
+	const status = typeof query.status === 'string' ? query.status : undefined
 
 	const where: CategoryWhereInput = {
 		...(status && status !== 'all' ? { status: status as any } : {}),
 		...(search
 			? {
-				OR: [
-					{
-						name: {
-							contains: search,
-							mode: 'insensitive',
+					OR: [
+						{
+							name: {
+								contains: search,
+								mode: 'insensitive',
+							},
 						},
-					},
-					{
-						slug: {
-							contains: search,
-							mode: 'insensitive',
+						{
+							slug: {
+								contains: search,
+								mode: 'insensitive',
+							},
 						},
-					},
-					{
-						description: {
-							contains: search,
-							mode: 'insensitive',
+						{
+							description: {
+								contains: search,
+								mode: 'insensitive',
+							},
 						},
-					},
-				],
-			}
+					],
+				}
 			: {}),
 	}
 
@@ -112,20 +110,13 @@ const getCategoryById = async (id: string) => {
 	})
 
 	if (!category) {
-		throw new AppError(
-			StatusCode.NOT_FOUND,
-			'Category not found',
-		)
+		throw new AppError(StatusCode.NOT_FOUND, 'Category not found')
 	}
 
 	return category
 }
 
-
-const updateCategory = async (
-	id: string,
-	req: Request,
-) => {
+const updateCategory = async (id: string, req: Request) => {
 	const existingCategory = await getCategoryById(id)
 
 	const payload = req.body
@@ -163,7 +154,6 @@ const updateCategory = async (
 	}
 }
 
-
 const deleteCategory = async (id: string) => {
 	const category = await getCategoryById(id)
 
@@ -177,22 +167,17 @@ const deleteCategory = async (id: string) => {
 		try {
 			await deleteFromCloudinary(category.image)
 		} catch (error) {
-			console.error(
-				'Failed to delete image from Cloudinary:',
-				error,
-			)
+			console.error('Failed to delete image from Cloudinary:', error)
 		}
 	}
 
 	return null
 }
 
-
-
 export const CategoryService = {
 	createCategory,
 	getCategories,
 	getCategoryById,
 	updateCategory,
-	deleteCategory
+	deleteCategory,
 }

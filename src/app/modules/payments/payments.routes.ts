@@ -7,14 +7,8 @@ import { PaymentsValidation } from './payments.validation'
 const router = Router()
 
 // cashier+ can read all payments
-router.get(
-	'/',
-	PaymentsController.getPayments,
-)
-router.get(
-	'/:id',
-	PaymentsController.getPaymentById,
-)
+router.get('/', PaymentsController.getPayments)
+router.get('/:id', PaymentsController.getPaymentById)
 
 // cashier+ can create payment records (triggered by order flow)
 router.post(

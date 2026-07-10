@@ -1,27 +1,35 @@
+import { Request } from 'express'
+
+import { deleteFromCloudinary } from '@/config/multer.config'
 import { prisma } from '@/config/prisma.config'
+import type { MenuItemWhereInput } from '@/generated/prisma/models/MenuItem'
 import AppError from '@/helpers/AppError'
 import { calculatePagination } from '@/utils/paginationHelper'
 import StatusCode from '@/utils/statusCode'
 
-import type {
-	MenuItemCreateInput,
-	MenuItemUncheckedCreateInput,
-	MenuItemUncheckedUpdateInput,
-	MenuItemUpdateInput,
-	MenuItemWhereInput,
-} from '../../../generated/prisma/models/MenuItem'
+const createMenuItem = async (req: Request) => {
+	const payload = req.body
+	const file = req.file as Express.Multer.File | undefined
 
-type MenuItemCreatePayload = MenuItemCreateInput | MenuItemUncheckedCreateInput
-type MenuItemUpdatePayload = MenuItemUpdateInput | MenuItemUncheckedUpdateInput
+	const data = {
+		...payload,
+		imageUrl: file?.path ?? null,
+	}
 
-// Parse a query string value to boolean — "true" → true, anything else → false.
-function parseBool(value: unknown): boolean | undefined {
-	if (value === undefined || value === null || value === '') return undefined
-	return String(value).toLowerCase() === 'true'
-}
+	try {
+		return await prisma.menuItem.create({
+			data,
+			include: {
+				category: true,
+			},
+		})
+	} catch (error) {
+		if (file?.path) {
+			await deleteFromCloudinary(file.path)
+		}
 
-const createMenuItem = async (payload: MenuItemCreatePayload) => {
-	return prisma.menuItem.create({ data: payload })
+		throw error
+	}
 }
 
 const getMenuItems = async (query: Record<string, unknown>) => {
@@ -31,34 +39,53 @@ const getMenuItems = async (query: Record<string, unknown>) => {
 	})
 
 	const search = typeof query.search === 'string' ? query.search : undefined
-	const category =
-		typeof query.category === 'string' ? query.category : undefined
 
-	const isFeatured = parseBool(query.isFeatured)
-	const isSpicy = parseBool(query.isSpicy)
-	// Default: only show available items unless caller explicitly passes isAvailable=false
+	const categoryId =
+		typeof query.categoryId === 'string' ? query.categoryId : undefined
+
 	const isAvailable =
-		query.isAvailable !== undefined ? parseBool(query.isAvailable) : true
+		query.isAvailable !== undefined
+			? query.isAvailable === 'true'
+			: undefined
+
+	const isFeatured =
+		query.isFeatured !== undefined ? query.isFeatured === 'true' : undefined
+
+	const isSpicy =
+		query.isSpicy !== undefined ? query.isSpicy === 'true' : undefined
 
 	const where: MenuItemWhereInput = {
-		...(category && category !== 'all' ? { category } : {}),
+		...(categoryId ? { categoryId } : {}),
+
+		...(isAvailable !== undefined ? { isAvailable } : {}),
+
+		...(isFeatured !== undefined ? { isFeatured } : {}),
+
+		...(isSpicy !== undefined ? { isSpicy } : {}),
+
 		...(search
 			? {
 					OR: [
-						{ name: { contains: search, mode: 'insensitive' } },
+						{
+							name: {
+								contains: search,
+								mode: 'insensitive',
+							},
+						},
 						{
 							description: {
 								contains: search,
 								mode: 'insensitive',
 							},
 						},
-						{ category: { contains: search, mode: 'insensitive' } },
+						{
+							tags: {
+								has: search,
+							},
+						},
 					],
 				}
 			: {}),
-		...(isFeatured !== undefined ? { isFeatured } : {}),
-		...(isSpicy !== undefined ? { isSpicy } : {}),
-		...(isAvailable !== undefined ? { isAvailable } : {}),
 	}
 
 	const [data, total] = await Promise.all([
@@ -66,44 +93,109 @@ const getMenuItems = async (query: Record<string, unknown>) => {
 			where,
 			skip,
 			take: limit,
-			orderBy: [{ isFeatured: 'desc' }, { rating: 'desc' }],
+			orderBy: {
+				createdAt: 'desc',
+			},
+			include: {
+				category: true,
+			},
 		}),
-		prisma.menuItem.count({ where }),
+
+		prisma.menuItem.count({
+			where,
+		}),
 	])
 
 	return {
-		meta: { page, limit, total },
+		meta: {
+			page,
+			limit,
+			total,
+		},
 		data,
 	}
 }
 
 const getMenuItemById = async (id: string) => {
-	const item = await prisma.menuItem.findUnique({ where: { id } })
-	if (!item) throw new AppError(StatusCode.NOT_FOUND, 'Menu item not found')
-	return item
+	const menuItem = await prisma.menuItem.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			category: true,
+		},
+	})
+
+	if (!menuItem) {
+		throw new AppError(StatusCode.NOT_FOUND, 'Menu item not found')
+	}
+
+	return menuItem
 }
 
-const updateMenuItem = async (id: string, payload: MenuItemUpdatePayload) => {
-	await getMenuItemById(id)
-	return prisma.menuItem.update({ where: { id }, data: payload })
+const updateMenuItem = async (id: string, req: Request) => {
+	const existingMenuItem = await getMenuItemById(id)
+
+	const payload = req.body
+	const file = req.file as Express.Multer.File | undefined
+
+	const data = {
+		...payload,
+	}
+
+	if (file) {
+		data.imageUrl = file.path
+	}
+
+	try {
+		const updatedMenuItem = await prisma.menuItem.update({
+			where: {
+				id,
+			},
+			data,
+			include: {
+				category: true,
+			},
+		})
+
+		if (file && existingMenuItem.imageUrl) {
+			await deleteFromCloudinary(existingMenuItem.imageUrl)
+		}
+
+		return updatedMenuItem
+	} catch (error) {
+		if (file?.path) {
+			await deleteFromCloudinary(file.path)
+		}
+
+		throw error
+	}
 }
 
 const deleteMenuItem = async (id: string) => {
-	await getMenuItemById(id)
-	await prisma.menuItem.delete({ where: { id } })
+	const menuItem = await getMenuItemById(id)
+
+	await prisma.menuItem.delete({
+		where: {
+			id,
+		},
+	})
+
+	if (menuItem.imageUrl) {
+		try {
+			await deleteFromCloudinary(menuItem.imageUrl)
+		} catch (error) {
+			console.error('Failed to delete image from Cloudinary:', error)
+		}
+	}
+
 	return null
 }
 
-const uploadMenuItemImage = async (id: string, imageUrl: string) => {
-	await getMenuItemById(id)
-	return prisma.menuItem.update({ where: { id }, data: { imageUrl } })
-}
-
-export const MenuService = {
+export const MenuItemService = {
 	createMenuItem,
 	getMenuItems,
 	getMenuItemById,
 	updateMenuItem,
 	deleteMenuItem,
-	uploadMenuItemImage,
 }
