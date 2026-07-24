@@ -1,4 +1,5 @@
 import { Router } from 'express'
+
 import validateRequest from '@/middlewares/validateRequest'
 
 import { ReservationsController } from './reservations.controller'

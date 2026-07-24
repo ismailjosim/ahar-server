@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-import { requireRole } from '@/middlewares/requireRole'
 import validateRequest from '@/middlewares/validateRequest'
 
 import { InventoryController } from './inventory.controller'

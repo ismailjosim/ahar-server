@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@/config/prisma.config'
 import AppError from '@/helpers/AppError'
 import catchAsync from '@/shared/catchAsync'

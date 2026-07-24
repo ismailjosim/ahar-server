@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import SSLCommerzPayment from 'sslcommerz-lts'
 
 import { envVars } from '@/config/env'

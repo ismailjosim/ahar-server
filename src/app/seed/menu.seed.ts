@@ -179,13 +179,29 @@ export async function seedMenu() {
 		return
 	}
 
-	await prisma.menuItem.createMany({
-		data: menuSeedData.map((item) => ({
-			...item,
+	// Fetch categories and build a name -> id lookup map
+	const categories = await prisma.category.findMany()
+	const categoryMap = new Map(categories.map((c) => [c.name, c.id]))
+
+	const data = menuSeedData.map((item) => {
+		const categoryId = categoryMap.get(item.category)
+		if (!categoryId) {
+			throw new Error(
+				`Category "${item.category}" not found. Seed categories before menu items.`,
+			)
+		}
+
+		const { category: _ignoreCategory, ...rest } = item
+
+		return {
+			...rest,
+			categoryId,
 			variants: item.variants,
 			addOns: item.addOns,
-		})),
+		}
 	})
+
+	await prisma.menuItem.createMany({ data })
 
 	console.log(`Menu seeded with ${menuSeedData.length} items.`)
 }

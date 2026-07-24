@@ -1,4 +1,5 @@
 import { Router } from 'express'
+
 import validateRequest from '@/middlewares/validateRequest'
 
 import { NotificationsController } from './notifications.controller'

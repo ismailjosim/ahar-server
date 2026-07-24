@@ -1,4 +1,5 @@
 import { Router } from 'express'
+
 import { StaffController } from './staff.controller'
 
 const router = Router()

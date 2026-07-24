@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import crypto from 'crypto'
 import { Request } from 'express'
 import slugify from 'slugify'

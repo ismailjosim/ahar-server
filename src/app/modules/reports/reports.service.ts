@@ -263,6 +263,10 @@ async function getSummaryStats(from?: string, to?: string) {
 
 	const dateFilter = { createdAt: { gte: fromDate, lte: toDate } }
 
+	// Run as Promise.all (not $transaction) — mixing aggregate/groupBy/count
+	// shapes in a single $transaction tuple causes TS to lose per-item
+	// inference and collapse types. These are read-only report queries, so
+	// atomicity isn't required here.
 	const [
 		totalRevenue,
 		totalOrders,
@@ -270,7 +274,7 @@ async function getSummaryStats(from?: string, to?: string) {
 		topItems,
 		ordersByStatus,
 		paymentsByMethod,
-	] = await prisma.$transaction([
+	] = await Promise.all([
 		// Total revenue (delivered orders only)
 		prisma.order.aggregate({
 			_sum: { total: true },
@@ -298,7 +302,7 @@ async function getSummaryStats(from?: string, to?: string) {
 		// Orders grouped by status
 		prisma.order.groupBy({
 			by: ['status'],
-			_count: { id: true },
+			_count: { _all: true },
 			where: dateFilter,
 			orderBy: { status: 'asc' },
 		}),
@@ -307,7 +311,7 @@ async function getSummaryStats(from?: string, to?: string) {
 		prisma.payment.groupBy({
 			by: ['method'],
 			_sum: { amount: true },
-			_count: { id: true },
+			_count: { _all: true },
 			where: dateFilter,
 			orderBy: { method: 'asc' },
 		}),
@@ -319,17 +323,17 @@ async function getSummaryStats(from?: string, to?: string) {
 		avgOrderValue: avgOrderValue._avg.total ?? 0,
 		topItems: topItems.map((i) => ({
 			name: i.nameSnapshot,
-			quantity: i._sum.quantity ?? 0,
-			revenue: i._sum.lineTotal ?? 0,
+			quantity: i._sum?.quantity ?? 0,
+			revenue: i._sum?.lineTotal ?? 0,
 		})),
 		ordersByStatus: ordersByStatus.map((o) => ({
 			status: fromDbOrderStatus(o.status as OrderStatus),
-			count: o._count.id,
+			count: o._count._all,
 		})),
 		paymentsByMethod: paymentsByMethod.map((p) => ({
 			method: p.method,
-			count: p._count.id,
-			total: p._sum.amount ?? 0,
+			count: p._count._all,
+			total: p._sum?.amount ?? 0,
 		})),
 		fromDate: fromDate.toISOString(),
 		toDate: toDate.toISOString(),
