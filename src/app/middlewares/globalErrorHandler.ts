@@ -1,28 +1,42 @@
-import type { ErrorRequestHandler } from 'express'
-import { ZodError, type ZodIssue } from 'zod'
+import type { ErrorRequestHandler } from 'express';
+import { ZodError } from 'zod';
 
-import StatusCode from '@/utils/statusCode'
+import AppError from '../../helpers/AppError';
+import StatusCode from '../utils/statusCode';
 
-const globalErrorHandler: ErrorRequestHandler = (error, req, res, _next) => {
-	let statusCode = error.statusCode || StatusCode.INTERNAL_SERVER_ERROR
-	let message = error.message || 'Something went wrong'
-	let errorSources: unknown = undefined
+const globalErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
+  let statusCode: number = StatusCode.INTERNAL_SERVER_ERROR;
+  let message = 'Something went wrong';
+  let errorSources: { path: string; message: string }[] = [];
 
-	if (error instanceof ZodError) {
-		statusCode = StatusCode.BAD_REQUEST
-		message = 'Validation error'
-		errorSources = error.issues.map((issue: ZodIssue) => ({
-			path: issue.path.join('.'),
-			message: issue.message,
-		}))
-	}
+  // Handle Zod validation errors
+  if (error instanceof ZodError) {
+    statusCode = StatusCode.BAD_REQUEST;
+    message = 'Validation Error';
 
-	res.status(statusCode).json({
-		success: false,
-		message,
-		errorSources,
-		stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-	})
-}
+    errorSources = error.issues.map((issue) => ({
+      path: issue.path.join('.'),
+      message: issue.message,
+    }));
+  }
 
-export default globalErrorHandler
+  // Handle custom application errors
+  else if (error instanceof AppError) {
+    statusCode = error.statusCode;
+    message = error.message;
+  }
+
+  // Handle generic errors
+  else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+    errorSources: errorSources.length ? errorSources : undefined,
+    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+  });
+};
+
+export default globalErrorHandler;

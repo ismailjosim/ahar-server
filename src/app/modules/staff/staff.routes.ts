@@ -1,29 +1,29 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import { StaffController } from './staff.controller'
+import { StaffController } from './staff.controller';
 
-const router = Router()
+const router = Router();
 
 // Public invite-validation routes
-router.get('/invite/:token', StaffController.acceptInvite)
-router.patch('/invite/:token/use', StaffController.markInviteUsed)
+router.get('/invite/:token', StaffController.acceptInvite);
+router.patch('/invite/:token/use', StaffController.markInviteUsed);
 
 // Super admin only routes
-router.get('/', StaffController.listStaff)
+router.get('/', StaffController.listStaff);
 router.post(
-	'/invite',
+  '/invite',
 
-	StaffController.inviteStaff,
-)
+  StaffController.inviteStaff,
+);
 router.patch(
-	'/:id/role',
+  '/:id/role',
 
-	StaffController.updateStaffRole,
-)
+  StaffController.updateStaffRole,
+);
 router.patch(
-	'/:id/active',
+  '/:id/active',
 
-	StaffController.toggleActive,
-)
+  StaffController.toggleActive,
+);
 
-export const StaffRoutes = router
+export const StaffRoutes = router;

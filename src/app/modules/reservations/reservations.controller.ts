@@ -1,109 +1,98 @@
-import catchAsync from '@/shared/catchAsync'
-import sendResponse from '@/shared/sendResponse'
-import StatusCode from '@/utils/statusCode'
+import StatusCode from '@/app/utils/statusCode';
+import catchAsync from '@/app/shared/catchAsync';
+import sendResponse from '@/app/shared/sendResponse';
 
-import { ReservationsService } from './reservations.service'
+import { ReservationsService } from './reservations.service';
 
 const getReservations = catchAsync(async (req, res) => {
-	const result = await ReservationsService.getReservations(req.query)
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Reservations retrieved successfully',
-		meta: {
-			page: result.page,
-			limit: result.limit,
-			total: result.total,
-		},
-		data: result.data,
-	})
-})
+  const result = await ReservationsService.getReservations(req.query);
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Reservations retrieved successfully',
+    meta: {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+    },
+    data: result.data,
+  });
+});
 
 const getReservationById = catchAsync(async (req, res) => {
-	const result = await ReservationsService.getReservationById(
-		String(req.params.id),
-	)
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Reservation retrieved successfully',
-		data: result,
-	})
-})
+  const result = await ReservationsService.getReservationById(String(req.params.id));
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Reservation retrieved successfully',
+    data: result,
+  });
+});
 
 const createReservation = catchAsync(async (req, res) => {
-	const userId = req.user?.id ?? undefined
-	const result = await ReservationsService.createReservation(req.body, userId)
-	sendResponse(res, {
-		statusCode: StatusCode.CREATED,
-		success: true,
-		message: 'Reservation created successfully',
-		data: result,
-	})
-})
+  const userId = req.user?.id ?? undefined;
+  const result = await ReservationsService.createReservation(req.body, userId);
+  sendResponse(res, {
+    statusCode: StatusCode.CREATED,
+    success: true,
+    message: 'Reservation created successfully',
+    data: result,
+  });
+});
 
 const updateReservation = catchAsync(async (req, res) => {
-	const result = await ReservationsService.updateReservation(
-		String(req.params.id),
-		req.body,
-	)
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Reservation updated successfully',
-		data: result,
-	})
-})
+  const result = await ReservationsService.updateReservation(String(req.params.id), req.body);
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Reservation updated successfully',
+    data: result,
+  });
+});
 
 const deleteReservation = catchAsync(async (req, res) => {
-	await ReservationsService.deleteReservation(String(req.params.id))
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Reservation deleted successfully',
-		data: null,
-	})
-})
+  await ReservationsService.deleteReservation(String(req.params.id));
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Reservation deleted successfully',
+    data: null,
+  });
+});
 
 const getMyReservations = catchAsync(async (req, res) => {
-	const userId = req.user!.id
-	const result = await ReservationsService.getReservationsByUser(
-		userId,
-		req.query,
-	)
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Your reservations.',
-		meta: {
-			page: result.page,
-			limit: result.limit,
-			total: result.total,
-		},
-		data: result.data,
-	})
-})
+  const userId = req.user!.id;
+  const result = await ReservationsService.getReservationsByUser(userId, req.query);
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Your reservations.',
+    meta: {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+    },
+    data: result.data,
+  });
+});
 
 const cancelMyReservation = catchAsync(async (req, res) => {
-	const userId = req.user!.id
-	const result = await ReservationsService.cancelMyReservation(
-		String(req.params.id),
-		userId,
-	)
-	sendResponse(res, {
-		statusCode: StatusCode.OK,
-		success: true,
-		message: 'Reservation cancelled.',
-		data: result,
-	})
-})
+  const userId = req.user!.id;
+  const result = await ReservationsService.cancelMyReservation(String(req.params.id), userId);
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'Reservation cancelled.',
+    data: result,
+  });
+});
 
 export const ReservationsController = {
-	getReservations,
-	getReservationById,
-	createReservation,
-	updateReservation,
-	deleteReservation,
-	getMyReservations,
-	cancelMyReservation,
-}
+  getReservations,
+  getReservationById,
+  createReservation,
+  updateReservation,
+  deleteReservation,
+  getMyReservations,
+  cancelMyReservation,
+};

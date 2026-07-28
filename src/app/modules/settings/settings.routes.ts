@@ -1,22 +1,22 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import validateRequest from '@/middlewares/validateRequest'
+import validateRequest from '@/app/middlewares/validateRequest';
 
-import { SettingsController } from './settings.controller'
-import { SettingsValidation } from './settings.validation'
+import { SettingsController } from './settings.controller';
+import { SettingsValidation } from './settings.validation';
 
-const router = Router()
+const router = Router();
 
-router.get('/public', SettingsController.getPublicSettings)
+router.get('/public', SettingsController.getPublicSettings);
 
 // manager+ can read full settings
-router.get('/', SettingsController.getSettings)
+router.get('/', SettingsController.getSettings);
 
 // owner+ can change settings
 router.patch(
-	'/',
-	validateRequest(SettingsValidation.updateSettings),
-	SettingsController.updateSettings,
-)
+  '/',
+  validateRequest(SettingsValidation.updateSettings),
+  SettingsController.updateSettings,
+);
 
-export const SettingsRoutes = router
+export const SettingsRoutes = router;

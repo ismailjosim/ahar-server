@@ -1,41 +1,33 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import { fileUploader } from '@/config/multer.config'
-// import { UserRole } from '@/generated/prisma/enums'
-// import checkAuth from '@/middlewares/checkAuth'
-import validateRequest from '@/middlewares/validateRequest'
+import validateRequest from '@/app/middlewares/validateRequest';
+import { fileUploader } from '@/config/multer.config';
 
-import { CategoryController } from './category.controller'
-import { CategoryValidation } from './category.validation'
+import { CategoryController } from './category.controller';
+import { CategoryValidation } from './category.validation';
 
-const router = Router()
+const router = Router();
 
 // Public — anyone can browse categories
-router.get('/', CategoryController.getCategories)
-router.get('/:id', CategoryController.getCategoryById)
+router.get('/', CategoryController.getCategories);
+router.get('/:id', CategoryController.getCategoryById);
 
 // Protected — manager+ can create and edit categories
 router.post(
-	'/create',
-	// checkAuth(UserRole.MANAGER, UserRole.OWNER),
-	fileUploader.multerUpload.single('file'),
-	validateRequest(CategoryValidation.createCategory),
-	CategoryController.createCategory,
-)
+  '/create',
+  fileUploader.multerUpload.single('file'),
+  validateRequest(CategoryValidation.createCategory),
+  CategoryController.createCategory,
+);
 
 router.patch(
-	'/:id',
-	// checkAuth(UserRole.MANAGER, UserRole.OWNER),
-	fileUploader.multerUpload.single('file'),
-	validateRequest(CategoryValidation.updateCategory),
-	CategoryController.updateCategory,
-)
+  '/:id',
+  fileUploader.multerUpload.single('file'),
+  validateRequest(CategoryValidation.updateCategory),
+  CategoryController.updateCategory,
+);
 
 // Protected — owner only can delete categories
-router.delete(
-	'/:id',
-	// checkAuth(UserRole.OWNER),
-	CategoryController.deleteCategory,
-)
+router.delete('/:id', CategoryController.deleteCategory);
 
-export const CategoryRoutes = router
+export const CategoryRoutes = router;

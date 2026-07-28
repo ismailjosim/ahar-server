@@ -1,29 +1,29 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import validateRequest from '@/middlewares/validateRequest'
+import validateRequest from '@/app/middlewares/validateRequest';
 
-import { InventoryController } from './inventory.controller'
-import { InventoryValidation } from './inventory.validation'
+import { InventoryController } from './inventory.controller';
+import { InventoryValidation } from './inventory.validation';
 
-const router = Router()
+const router = Router();
 
 // All inventory routes require manager+
 router.get(
-	'/',
-	validateRequest(InventoryValidation.getInventoryItems),
-	InventoryController.getInventoryItems,
-)
+  '/',
+  validateRequest(InventoryValidation.getInventoryItems),
+  InventoryController.getInventoryItems,
+);
 router.post(
-	'/',
-	validateRequest(InventoryValidation.createInventoryItem),
-	InventoryController.createInventoryItem,
-)
-router.get('/:id', InventoryController.getInventoryItemById)
+  '/',
+  validateRequest(InventoryValidation.createInventoryItem),
+  InventoryController.createInventoryItem,
+);
+router.get('/:id', InventoryController.getInventoryItemById);
 router.patch(
-	'/:id',
-	validateRequest(InventoryValidation.updateInventoryItem),
-	InventoryController.updateInventoryItem,
-)
-router.delete('/:id', InventoryController.deleteInventoryItem)
+  '/:id',
+  validateRequest(InventoryValidation.updateInventoryItem),
+  InventoryController.updateInventoryItem,
+);
+router.delete('/:id', InventoryController.deleteInventoryItem);
 
-export const InventoryRoutes = router
+export const InventoryRoutes = router;

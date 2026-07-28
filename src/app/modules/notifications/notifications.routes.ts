@@ -1,21 +1,21 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import validateRequest from '@/middlewares/validateRequest'
+import validateRequest from '@/app/middlewares/validateRequest';
 
-import { NotificationsController } from './notifications.controller'
-import { NotificationsValidation } from './notifications.validation'
+import { NotificationsController } from './notifications.controller';
+import { NotificationsValidation } from './notifications.validation';
 
-const router = Router()
+const router = Router();
 
 // cashier+ can read and mark notifications
-router.get('/', NotificationsController.getNotifications)
-router.patch('/:id/read', NotificationsController.markRead)
+router.get('/', NotificationsController.getNotifications);
+router.patch('/:id/read', NotificationsController.markRead);
 
 // manager+ can create notifications (system events)
 router.post(
-	'/',
-	validateRequest(NotificationsValidation.createNotification),
-	NotificationsController.createNotification,
-)
+  '/',
+  validateRequest(NotificationsValidation.createNotification),
+  NotificationsController.createNotification,
+);
 
-export const NotificationsRoutes = router
+export const NotificationsRoutes = router;

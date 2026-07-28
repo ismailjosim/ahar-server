@@ -1,43 +1,43 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import validateRequest from '@/middlewares/validateRequest'
+import validateRequest from '@/app/middlewares/validateRequest';
 
-import { ReservationsController } from './reservations.controller'
-import { ReservationsValidation } from './reservations.validation'
+import { ReservationsController } from './reservations.controller';
+import { ReservationsValidation } from './reservations.validation';
 
-const router = Router()
+const router = Router();
 
 // Public — customers book tables (optionalAuth links to account when logged in)
 router.post(
-	'/',
-	validateRequest(ReservationsValidation.createReservation),
-	ReservationsController.createReservation,
-)
+  '/',
+  validateRequest(ReservationsValidation.createReservation),
+  ReservationsController.createReservation,
+);
 
 // Protected — authenticated customer views their own reservations
-router.get('/my', ReservationsController.getMyReservations)
+router.get('/my', ReservationsController.getMyReservations);
 
 // Protected — authenticated customer cancels their own reservation
 router.patch(
-	'/my/:id/cancel',
+  '/my/:id/cancel',
 
-	ReservationsController.cancelMyReservation,
-)
+  ReservationsController.cancelMyReservation,
+);
 
 // Public — customers look up their own reservation by ID
-router.get('/:id', ReservationsController.getReservationById)
+router.get('/:id', ReservationsController.getReservationById);
 
 // Protected — manager+ views all reservations
-router.get('/', ReservationsController.getReservations)
+router.get('/', ReservationsController.getReservations);
 
 // Protected — manager+ approves / rejects / edits
 router.patch(
-	'/:id',
-	validateRequest(ReservationsValidation.updateReservation),
-	ReservationsController.updateReservation,
-)
+  '/:id',
+  validateRequest(ReservationsValidation.updateReservation),
+  ReservationsController.updateReservation,
+);
 
 // Protected — manager+ deletes reservation
-router.delete('/:id', ReservationsController.deleteReservation)
+router.delete('/:id', ReservationsController.deleteReservation);
 
-export const ReservationsRoutes = router
+export const ReservationsRoutes = router;

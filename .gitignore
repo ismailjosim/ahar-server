@@ -6,3 +6,5 @@ coverage
 src/generated
 *.log
 logs/
+
+.vercel
