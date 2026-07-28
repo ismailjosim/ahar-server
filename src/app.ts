@@ -1,11 +1,10 @@
 import cors from 'cors';
 import express, { type Application, type Request, type Response } from 'express';
 
-import { envVars } from '@/config/env';
-
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
+import { envVars } from './config/env';
 
 const app: Application = express();
 
