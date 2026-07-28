@@ -10,6 +10,7 @@ const router = Router();
 
 // Public — anyone can browse categories
 router.get('/', CategoryController.getCategories);
+router.get('/insert/dummy', CategoryController.injectDummyCategories);
 router.get('/:id', CategoryController.getCategoryById);
 
 // Protected — manager+ can create and edit categories

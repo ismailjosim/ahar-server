@@ -175,10 +175,27 @@ const deleteCategory = async (id: string) => {
   return null;
 };
 
+const injectDummyCategories = async () => {
+  const fs = await import('fs');
+  const path = await import('path');
+
+  const filePath = path.join(process.cwd(), 'data', 'categories.json');
+  const fileData = fs.readFileSync(filePath, 'utf-8');
+  const categories = JSON.parse(fileData);
+
+  const result = await prisma.category.createMany({
+    data: categories,
+    skipDuplicates: true,
+  });
+
+  return result;
+};
+
 export const CategoryService = {
   createCategory,
   getCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,
+  injectDummyCategories,
 };

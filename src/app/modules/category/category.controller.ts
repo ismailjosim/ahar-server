@@ -62,10 +62,22 @@ const deleteCategory = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const injectDummyCategories = catchAsync(async (req: Request, res: Response) => {
+  const result = await CategoryService.injectDummyCategories();
+
+  sendResponse(res, {
+    statusCode: StatusCode.CREATED,
+    success: true,
+    message: 'Dummy categories injected successfully',
+    data: result,
+  });
+});
+
 export const CategoryController = {
   createCategory,
   getCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,
+  injectDummyCategories,
 };
