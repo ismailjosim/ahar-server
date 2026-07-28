@@ -6,7 +6,7 @@ type NotificationPayload = Record<string, unknown>;
 const getNotifications = async (query: Record<string, unknown>) => {
   const { page, limit, skip } = calculatePagination({
     page: Number(query.page || 1),
-    limit: Number(query.limit || query.pageSize || 20),
+    limit: Number(query.limit || query.pageSize || 10),
   });
   const [data, total] = await Promise.all([
     prisma.notification.findMany({

@@ -44,7 +44,7 @@ const createCategory = async (req: Request) => {
 const getCategories = async (query: Record<string, unknown>) => {
   const { page, limit, skip } = calculatePagination({
     page: Number(query.page || 1),
-    limit: Number(query.limit || query.pageSize || 20),
+    limit: Number(query.limit || query.pageSize || 10),
   });
 
   const search = typeof query.search === 'string' ? query.search : undefined;
