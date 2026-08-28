@@ -1,27 +1,46 @@
 model Order {
-  id              String        @id @default(uuid())
-  customerName    String
-  phone           String
-  email           String?
-  fulfillmentType String
-  itemSummary     String        @default("")
-  address         String?
-  notes           String?
-  subtotal        Float
-  deliveryFee     Float         @default(0)
-  vat             Float         @default(0)
-  serviceCharge   Float         @default(0)
-  discount        Float         @default(0)
-  total           Float
-  paymentMethod   String
-  paymentStatus   PaymentStatus @default(PENDING)
-  status          OrderStatus   @default(PLACED)
-  userId          String?
-  items           OrderItem[]
-  payments        Payment[]
-  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id String @id @default(uuid())
+
+  // Customer snapshot
+  customerName String
+  phone        String
+  email        String?
+
+  // Order fulfillment
+  fulfillmentType FulfillmentType
+
+  // Human-readable order summary
+  itemSummary String @default("")
+
+  // Delivery information
+  address String?
+  notes   String?
+
+  // Pricing
+  subtotal      Float
+  deliveryFee   Float @default(0)
+  vat           Float @default(0)
+  serviceCharge Float @default(0)
+  discount      Float @default(0)
+  total         Float
+
+  // Payment
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
+
+  // Order status
+  status OrderStatus @default(PLACED)
+
+  // Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  items    OrderItem[]
+  payments Payment[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([phone])
   @@index([status])
@@ -30,15 +49,28 @@ model Order {
 }
 
 model OrderItem {
-  id              String    @id @default(uuid())
-  orderId         String
-  menuItemId      String?
-  nameSnapshot    String
-  quantity        Int
-  unitPrice       Float
+  id String @id @default(uuid())
+
+  // Relations
+  orderId    String
+  menuItemId String?
+
+  // Menu item snapshot
+  nameSnapshot String
+
+  // Quantity & pricing
+  quantity  Int
+  unitPrice Float
+  lineTotal Float
+
+  // Selected options snapshot
   selectedVariant Json?
   selectedAddOns  Json?
-  lineTotal       Float
-  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  menuItem        MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+
+  // Relations
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([menuItemId])
 }

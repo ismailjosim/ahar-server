@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import StatusCode from '@/app/utils/statusCode';
+import StatusCode from '@/utils/statusCode';
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
-import catchAsync from '@/app/shared/catchAsync';
-import sendResponse from '@/app/shared/sendResponse';
+import catchAsync from '@/shared/catchAsync';
+import sendResponse from '@/shared/sendResponse';
 
-import { PaymentStatus } from '../../../generated/prisma/enums';
+import { PaymentStatus } from '@generated/prisma/enums';
 import { PaymentsService } from './payments.service';
 import { SslService } from './sslcommerz/ssl.service';
 

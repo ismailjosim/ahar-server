@@ -1,21 +1,41 @@
 model Payment {
-  id                    String        @id @default(uuid())
-  orderId               String?
-  provider              String
-  method                String
-  amount                Float
-  currency              String        @default("BDT")
-  status                PaymentStatus @default(PENDING)
+  id String @id @default(uuid())
+
+  // Relation
+  orderId String?
+
+  // Gateway information
+  provider PaymentProvider
+  method   PaymentMethod
+
+  // Payment details
+  amount   Float
+  currency String @default("BDT")
+
+  // Payment status
+  status PaymentStatus @default(PENDING)
+
+  // Gateway references
   providerTransactionId String?
   providerSessionId     String?
-  verificationPayload   Json?
-  verifiedAt            DateTime?
-  refundReason          String?
-  order                 Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
 
+  // Raw gateway verification response
+  verificationPayload Json?
+
+  // Verification / Refund
+  verifiedAt   DateTime?
+  refundReason String?
+
+  // Relation
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, provider]) // One payment per provider per order
+  @@index([orderId])
   @@index([status])
+  @@index([provider])
   @@index([providerTransactionId])
-  @@unique([orderId, provider])
 }

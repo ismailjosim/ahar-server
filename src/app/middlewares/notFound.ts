@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 
-import StatusCode from '../utils/statusCode';
+import StatusCode from '@/utils/statusCode';
 
 const notFound: RequestHandler = (req, res) => {
   res.status(StatusCode.NOT_FOUND).json({

@@ -3,11 +3,11 @@ import crypto from 'crypto';
 import { Request } from 'express';
 import slugify from 'slugify';
 
-import { calculatePagination } from '@/app/utils/paginationHelper';
-import StatusCode from '@/app/utils/statusCode';
+import { calculatePagination } from '@/utils/paginationHelper';
+import StatusCode from '@/utils/statusCode';
 import { deleteFromCloudinary } from '@/config/multer.config';
 import { prisma } from '@/config/prisma.config';
-import type { CategoryWhereInput } from '@/generated/prisma/models/Category';
+import type { CategoryWhereInput } from '@generated/prisma/models/Category';
 import AppError from '@/helpers/AppError';
 
 const createCategory = async (req: Request) => {

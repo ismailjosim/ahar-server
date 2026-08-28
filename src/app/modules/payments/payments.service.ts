@@ -1,9 +1,9 @@
-import { calculatePagination } from '@/app/utils/paginationHelper';
-import StatusCode from '@/app/utils/statusCode';
+import { calculatePagination } from '@/utils/paginationHelper';
+import StatusCode from '@/utils/statusCode';
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
 
-import { fromDbPaymentStatus, toDbPaymentStatus } from '../orders/orders.utils';
+import { fromDbPaymentStatus, toDbPaymentStatus } from '@/modules/orders/orders.utils';
 
 type PaymentPayload = Record<string, unknown>;
 

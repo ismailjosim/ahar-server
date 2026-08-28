@@ -13,6 +13,17 @@ enum UserStatus {
   INACTIVE
 }
 
+enum CategoryStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum FulfillmentType {
+  DELIVERY
+  PICKUP
+}
+
 enum OrderStatus {
   PLACED
   ACCEPTED
@@ -21,6 +32,21 @@ enum OrderStatus {
   OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  SSLCOMMERZ
+  BKASH
+  NAGAD
+  CARD
+}
+
+enum PaymentProvider {
+  SSLCOMMERZ
+  BKASH
+  NAGAD
+  STRIPE
 }
 
 enum PaymentStatus {
@@ -35,4 +61,16 @@ enum ReservationStatus {
   APPROVED
   REJECTED
   CANCELLED
+}
+
+enum DiscountType {
+  FLAT
+  PERCENT
+}
+
+enum NotificationSeverity {
+  INFO
+  WARNING
+  CRITICAL
+  SUCCESS
 }

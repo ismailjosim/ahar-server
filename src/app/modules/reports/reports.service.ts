@@ -1,7 +1,7 @@
 import { prisma } from '@/config/prisma.config';
 
-import { OrderStatus, ReservationStatus } from '../../../generated/prisma/enums';
-import { fromDbOrderStatus } from '../orders/orders.utils';
+import { OrderStatus, ReservationStatus } from '@generated/prisma/enums';
+import { fromDbOrderStatus } from '@/modules/orders/orders.utils';
 
 // Status helper for reservations
 const fromReservationStatus = (status: ReservationStatus): string => {

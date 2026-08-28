@@ -1,10 +1,10 @@
 import crypto from 'node:crypto';
 
-import { EmailService } from '@/app/shared/email.service';
-import { calculatePagination } from '@/app/utils/paginationHelper';
-import StatusCode from '@/app/utils/statusCode';
+import { EmailService } from '@/utils/sendEmail';
+import { calculatePagination } from '@/utils/paginationHelper';
+import StatusCode from '@/utils/statusCode';
 import { prisma } from '@/config/prisma.config';
-import { UserRole, UserStatus } from '@/generated/prisma/enums';
+import { UserRole, UserStatus } from '@generated/prisma/enums';
 import AppError from '@/helpers/AppError';
 
 export const StaffService = {

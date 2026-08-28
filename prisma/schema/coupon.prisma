@@ -1,16 +1,24 @@
 model Coupon {
-  id            String    @id @default(uuid())
-  code          String    @unique
-  description   String?
-  discountType  String    // "flat" | "percent"
+  id String @id @default(uuid())
+
+  // Coupon details
+  code        String  @unique
+  description String?
+
+  // Discount rules
+  discountType  String // "flat" or "percent"
   discountValue Float
-  minOrderValue Float     @default(0)
-  maxUses       Int?
-  usedCount     Int       @default(0)
-  isActive      Boolean   @default(true)
-  expiresAt     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  minOrderValue Float  @default(0)
+
+  // Usage constraints
+  maxUses   Int?
+  usedCount Int       @default(0)
+  isActive  Boolean   @default(true)
+  expiresAt DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])

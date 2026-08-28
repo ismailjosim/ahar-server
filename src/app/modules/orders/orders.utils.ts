@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from '../../../generated/prisma/enums';
+import { OrderStatus, PaymentStatus } from '@generated/prisma/enums';
 
 export const toDbOrderStatus = (status?: string) => {
   switch (status) {

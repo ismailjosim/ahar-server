@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SSLCommerzPayment from 'sslcommerz-lts';
 
-import StatusCode from '@/app/utils/statusCode';
+import StatusCode from '@/utils/statusCode';
 import { envVars } from '@/config/env';
 import AppError from '@/helpers/AppError';
 

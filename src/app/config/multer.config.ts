@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-import StatusCode from '@/app/utils/statusCode';
+import StatusCode from '@/utils/statusCode';
 import AppError from '@/helpers/AppError';
 
 import cloudinary from './cloudinary.config';

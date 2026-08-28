@@ -18,9 +18,3 @@ model Category {
 
     @@map("category")
 }
-
-enum CategoryStatus {
-    ACTIVE
-    INACTIVE
-    ARCHIVED
-}

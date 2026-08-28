@@ -6,9 +6,9 @@ import { JWKS } from '@/config/jwks';
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
 
-import { UserStatus } from '../../generated/prisma/enums';
-import { AuthPayload } from '../../types/auth';
-import StatusCode from '../utils/statusCode';
+import { UserStatus } from '@generated/prisma/enums';
+import { AuthPayload } from '@/interfaces/auth';
+import StatusCode from '@/utils/statusCode';
 
 declare module 'express' {
   interface Request {

@@ -1,10 +1,10 @@
 import { Request } from 'express';
 
-import { calculatePagination } from '@/app/utils/paginationHelper';
-import StatusCode from '@/app/utils/statusCode';
+import { calculatePagination } from '@/utils/paginationHelper';
+import StatusCode from '@/utils/statusCode';
 import { deleteFromCloudinary } from '@/config/multer.config';
 import { prisma } from '@/config/prisma.config';
-import type { MenuItemWhereInput } from '@/generated/prisma/models/MenuItem';
+import type { MenuItemWhereInput } from '@generated/prisma/models/MenuItem';
 import AppError from '@/helpers/AppError';
 
 const createMenuItem = async (req: Request) => {

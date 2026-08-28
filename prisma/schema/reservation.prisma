@@ -1,20 +1,33 @@
 model Reservation {
-  id              String            @id @default(uuid())
-  customerName    String
-  phone           String
-  email           String?
+  id String @id @default(uuid())
+
+  // Customer snapshot
+  customerName String
+  phone        String
+  email        String?
+
+  // Reservation details
   guests          Int
   reservationTime DateTime
-  displayTime     String            @default("")
+  displayTime     String   @default("")
   tableCode       String?
-  status          ReservationStatus @default(PENDING)
-  occasion        String?
-  notes           String?
-  userId          String?
-  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
 
+  // Status
+  status ReservationStatus @default(PENDING)
+
+  // Additional information
+  occasion String?
+  notes    String?
+
+  // Relation
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
   @@index([reservationTime])
   @@index([status])
   @@index([userId])

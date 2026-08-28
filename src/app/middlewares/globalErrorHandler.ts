@@ -1,8 +1,8 @@
 import type { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 
-import AppError from '../../helpers/AppError';
-import StatusCode from '../utils/statusCode';
+import AppError from '@/helpers/AppError';
+import StatusCode from '@/utils/statusCode';
 
 const globalErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   let statusCode: number = StatusCode.INTERNAL_SERVER_ERROR;

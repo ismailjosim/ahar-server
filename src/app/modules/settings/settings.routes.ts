@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import validateRequest from '@/app/middlewares/validateRequest';
+import validateRequest from '@/middlewares/validateRequest';
 
 import { SettingsController } from './settings.controller';
 import { SettingsValidation } from './settings.validation';
