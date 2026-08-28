@@ -4,7 +4,7 @@ const createCategory = z.object({
   body: z.object({
     name: z.string().min(1, 'Category name is required'),
     description: z.string().optional(),
-    image: z.string().url().optional(),
+    image: z.url().optional(),
     icon: z.string().optional(),
     status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional(),
   }),

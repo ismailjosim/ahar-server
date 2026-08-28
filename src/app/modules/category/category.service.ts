@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { CategoryWhereInput } from '@generated/prisma/models/Category';
 import crypto from 'crypto';
 import { Request } from 'express';
 import slugify from 'slugify';
 
-import { calculatePagination } from '@/utils/paginationHelper';
-import StatusCode from '@/utils/statusCode';
 import { deleteFromCloudinary } from '@/config/multer.config';
 import { prisma } from '@/config/prisma.config';
-import type { CategoryWhereInput } from '@generated/prisma/models/Category';
 import AppError from '@/helpers/AppError';
+import { calculatePagination } from '@/utils/paginationHelper';
+import StatusCode from '@/utils/statusCode';
 
 const createCategory = async (req: Request) => {
   const payload = req.body;

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import validateRequest from '@/middlewares/validateRequest';
 import { fileUploader } from '@/config/multer.config';
+import validateRequest from '@/middlewares/validateRequest';
 
 import { CategoryController } from './category.controller';
 import { CategoryValidation } from './category.validation';

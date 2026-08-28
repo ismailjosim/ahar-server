@@ -16,6 +16,7 @@ const app: Application = express();
 // middleware
 app.set('trust proxy', 1);
 app.use(securityHeaders);
+// ** Request logger to log all incoming requests
 app.use(requestLogger);
 app.use(
   cors({
@@ -23,6 +24,7 @@ app.use(
     credentials: true,
   }),
 );
+// ** Rate limiter to limit the number of requests from a single IP address
 app.use(apiLimiter);
 
 // * Parser
@@ -43,7 +45,10 @@ app.get('/', async (req: Request, res: Response) => {
   });
 });
 
+// ** Global error handler to handle all the errors
 app.use(globalErrorHandler);
+
+// ** Not found handler to handle all the not found routes
 app.use(notFound);
 
 export default app;
