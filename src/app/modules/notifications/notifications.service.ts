@@ -1,5 +1,5 @@
-import { calculatePagination } from '@/utils/paginationHelper';
 import { prisma } from '@/config/prisma.config';
+import { calculatePagination } from '@/utils/paginationHelper';
 
 type NotificationPayload = Record<string, unknown>;
 

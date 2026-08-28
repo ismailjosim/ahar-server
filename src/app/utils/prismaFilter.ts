@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const pick = <T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   keys: K[],

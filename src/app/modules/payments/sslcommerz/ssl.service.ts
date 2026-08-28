@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SSLCommerzPayment from 'sslcommerz-lts';
 
-import StatusCode from '@/utils/statusCode';
 import { envVars } from '@/config/env';
 import AppError from '@/helpers/AppError';
+import StatusCode from '@/utils/statusCode';
 
 const SSLCommerz = (SSLCommerzPayment as any).default || SSLCommerzPayment;
 

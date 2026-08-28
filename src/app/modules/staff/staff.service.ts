@@ -1,11 +1,12 @@
 import crypto from 'node:crypto';
 
-import { EmailService } from '@/utils/sendEmail';
-import { calculatePagination } from '@/utils/paginationHelper';
-import StatusCode from '@/utils/statusCode';
-import { prisma } from '@/config/prisma.config';
 import { UserRole, UserStatus } from '@generated/prisma/enums';
+
+import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
+import { calculatePagination } from '@/utils/paginationHelper';
+import { EmailService } from '@/utils/sendEmail';
+import StatusCode from '@/utils/statusCode';
 
 export const StaffService = {
   async listStaff(query: { page?: number; pageSize?: number }) {

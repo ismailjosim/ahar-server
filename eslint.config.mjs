@@ -8,12 +8,7 @@ import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   {
-     ignores: [
-      'node_modules',
-      'dist',
-      'coverage',
-      '.env',
-    ],
+    ignores: ['node_modules', 'dist', 'coverage', '.env'],
   },
 
   js.configs.recommended,

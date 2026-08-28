@@ -1,3 +1,4 @@
+import { UserStatus } from '@generated/prisma/enums';
 import type { NextFunction, Request, Response } from 'express';
 import { jwtVerify } from 'jose-cjs';
 
@@ -5,8 +6,6 @@ import { envVars } from '@/config/env';
 import { JWKS } from '@/config/jwks';
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
-
-import { UserStatus } from '@generated/prisma/enums';
 import { AuthPayload } from '@/interfaces/auth';
 import StatusCode from '@/utils/statusCode';
 

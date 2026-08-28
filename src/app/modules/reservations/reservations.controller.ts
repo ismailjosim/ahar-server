@@ -1,6 +1,6 @@
-import StatusCode from '@/utils/statusCode';
 import catchAsync from '@/shared/catchAsync';
 import sendResponse from '@/shared/sendResponse';
+import StatusCode from '@/utils/statusCode';
 
 import { ReservationsService } from './reservations.service';
 

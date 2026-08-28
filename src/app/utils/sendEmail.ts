@@ -153,7 +153,12 @@ export const EmailService = {
     });
   },
 
-  async sendStaffInvite(invite: { email: string; role: string; token: string; inviterName: string }) {
+  async sendStaffInvite(invite: {
+    email: string;
+    role: string;
+    token: string;
+    inviterName: string;
+  }) {
     await sendMail({
       to: invite.email,
       subject: `${RESTAURANT_NAME} — You've been invited as ${invite.role}`,
