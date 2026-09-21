@@ -14,6 +14,7 @@ const getNotifications = catchAsync(async (req, res) => {
       page: result.page,
       limit: result.limit,
       total: result.total,
+      unreadCount: result.unreadCount,
     },
     data: result.data,
   });
@@ -39,8 +40,19 @@ const markRead = catchAsync(async (req, res) => {
   });
 });
 
+const markAllRead = catchAsync(async (_req, res) => {
+  const result = await NotificationsService.markAllRead();
+  sendResponse(res, {
+    statusCode: StatusCode.OK,
+    success: true,
+    message: 'All notifications marked as read',
+    data: result,
+  });
+});
+
 export const NotificationsController = {
   getNotifications,
   createNotification,
   markRead,
+  markAllRead,
 };

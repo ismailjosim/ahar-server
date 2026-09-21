@@ -9,6 +9,7 @@ const router = Router();
 
 // cashier+ can read and mark notifications
 router.get('/', NotificationsController.getNotifications);
+router.patch('/read-all', NotificationsController.markAllRead);
 router.patch('/:id/read', NotificationsController.markRead);
 
 // manager+ can create notifications (system events)

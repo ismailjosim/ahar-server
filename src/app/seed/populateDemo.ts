@@ -1349,6 +1349,47 @@ export async function populateDemoData() {
     });
   }
 
+  console.log('Seeding Notifications...');
+  await prisma.notification.deleteMany();
+  const notificationsData = [
+    {
+      type: 'order',
+      severity: 'info',
+      title: 'নতুন ৪টি লাইভ অর্ডার অপেক্ষায় আছে।',
+      message: 'গ্রাহকদের নতুন অর্ডার অবিলম্বে রান্নাঘরে প্রস্তুত করার জন্য গ্রহণ করুন।',
+      read: false,
+      sourceType: 'order',
+      sourceId: '/dashboard/orders',
+      createdAt: new Date(Date.now() - 2 * 60 * 1000),
+    },
+    {
+      type: 'reservation',
+      severity: 'warning',
+      title: '৩টি টেবিল রিজার্ভেশন যাচাই করা প্রয়োজন।',
+      message: 'আজকের সান্ধ্যকালীন টেবিল বুকিং নিশ্চিতকরণের অপেক্ষায় আছে।',
+      read: false,
+      sourceType: 'reservation',
+      sourceId: '/dashboard/reservations',
+      createdAt: new Date(Date.now() - 60 * 60 * 1000),
+    },
+    {
+      type: 'inventory',
+      severity: 'warning',
+      title: 'Premium Basmati Rice low stock alert.',
+      message: 'বাসমতি চালের মজুদ ৮ কেজিতে নেমে এসেছে। দ্রুত রিস্টক অর্ডার দিন।',
+      read: false,
+      sourceType: 'inventory',
+      sourceId: '/dashboard/inventory',
+      createdAt: new Date(Date.now() - 25 * 60 * 1000),
+    },
+  ];
+
+  for (const notif of notificationsData) {
+    await prisma.notification.create({
+      data: notif,
+    });
+  }
+
   console.log('✅ All Demo Data has been successfully populated!');
 }
 
