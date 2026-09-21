@@ -1,4 +1,4 @@
-import { type JWTPayload } from 'jose-cjs';
+import type { JWTPayload } from 'jose-cjs' with { 'resolution-mode': 'import' };
 
 export interface AuthPayload extends JWTPayload {
   id: string;

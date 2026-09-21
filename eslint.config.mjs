@@ -50,5 +50,17 @@ export default [
     },
   },
 
+  {
+    files: [
+      'src/app/config/jwks.ts',
+      'src/app/interfaces/auth.ts',
+      'src/app/middlewares/checkAuth.ts',
+      'src/app/utils/statusCode.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
   prettier,
 ];

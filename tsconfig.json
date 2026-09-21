@@ -8,11 +8,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/app/*"],
-      "@generated/*": ["src/generated/*"]
+      "@/*": ["./src/app/*"],
+      "@generated/*": ["./src/generated/*"]
     }
   },
   "include": ["src"],

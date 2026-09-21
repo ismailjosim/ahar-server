@@ -1,4 +1,7 @@
-import HttpStatus from 'http-status';
+import { createRequire } from 'node:module';
 
-const StatusCode = HttpStatus;
+const httpStatus = createRequire(__filename)('http-status') as typeof import('http-status', {
+  with: { 'resolution-mode': 'import' },
+});
+const StatusCode = httpStatus.default;
 export default StatusCode;
