@@ -1,3 +1,5 @@
+import { PaymentMethod, PaymentProvider } from '@generated/prisma/enums';
+
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
 import { fromDbPaymentStatus, toDbPaymentStatus } from '@/modules/orders/orders.utils';
@@ -39,7 +41,6 @@ const getPayments = async (query: Record<string, unknown>) => {
             mode: 'insensitive' as const,
           },
         },
-        { method: { contains: search, mode: 'insensitive' as const } },
       ],
     }),
   };
@@ -62,11 +63,17 @@ const getPaymentById = async (id: string) => {
 };
 
 const createPayment = async (payload: PaymentPayload) => {
+  const provider = String(
+    payload.provider || payload.method || 'COD',
+  ).toUpperCase() as PaymentProvider;
+  const method = String(payload.method || 'COD').toUpperCase() as PaymentMethod;
   const payment = await prisma.payment.create({
     data: {
       orderId: payload.orderId ? String(payload.orderId) : undefined,
-      provider: String(payload.provider || payload.method || 'manual'),
-      method: String(payload.method || 'Unknown'),
+      provider: Object.values(PaymentProvider).includes(provider)
+        ? provider
+        : PaymentProvider.SSLCOMMERZ,
+      method: Object.values(PaymentMethod).includes(method) ? method : PaymentMethod.SSLCOMMERZ,
       amount: Number(payload.amount || 0),
       status: toDbPaymentStatus(String(payload.status || 'Pending')),
       providerTransactionId: payload.transactionId ? String(payload.transactionId) : undefined,

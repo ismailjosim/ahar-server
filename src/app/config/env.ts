@@ -7,6 +7,7 @@ interface EnvConfig {
   DATABASE_URL: string;
   NODE_ENV: string;
   FRONTEND_URL: string;
+  BETTER_AUTH_SECRET: string;
 
   CLOUDINARY: {
     CLOUDINARY_CLOUD_NAME: string;
@@ -57,6 +58,7 @@ const loadEnvVars = (): EnvConfig => {
     'DATABASE_URL',
     'NODE_ENV',
     'FRONTEND_URL',
+    'BETTER_AUTH_SECRET',
 
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_API_KEY',
@@ -102,6 +104,7 @@ const loadEnvVars = (): EnvConfig => {
     PORT: process.env.PORT as string,
     DATABASE_URL: process.env.DATABASE_URL as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
 
     CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,

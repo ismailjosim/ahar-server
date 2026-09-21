@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PaymentStatus } from '@generated/prisma/enums';
+import { PaymentMethod, PaymentProvider, PaymentStatus } from '@generated/prisma/enums';
 
+import { envVars } from '@/config/env';
 import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
 import catchAsync from '@/shared/catchAsync';
@@ -71,13 +72,16 @@ const initSSLCommerz = catchAsync(async (req, res) => {
   // Store a Pending payment record
   await prisma.payment.upsert({
     where: {
-      orderId_provider: { orderId: order.id, provider: 'sslcommerz' },
+      orderId_provider: {
+        orderId: order.id,
+        provider: PaymentProvider.SSLCOMMERZ,
+      },
     },
     update: {},
     create: {
       orderId: order.id,
-      provider: 'sslcommerz',
-      method: 'sslcommerz',
+      provider: PaymentProvider.SSLCOMMERZ,
+      method: PaymentMethod.SSLCOMMERZ,
       amount: order.total,
       status: PaymentStatus.PENDING,
     },
@@ -101,7 +105,7 @@ const handleSSLCommerzIPN = catchAsync(async (req, res) => {
       data: { paymentStatus: PaymentStatus.FAILED },
     });
     await prisma.payment.updateMany({
-      where: { orderId: tran_id, provider: 'sslcommerz' },
+      where: { orderId: tran_id, provider: PaymentProvider.SSLCOMMERZ },
       data: { status: PaymentStatus.FAILED },
     });
     res.status(200).send('IPN received');
@@ -119,7 +123,7 @@ const handleSSLCommerzIPN = catchAsync(async (req, res) => {
     data: { paymentStatus: PaymentStatus.COMPLETED },
   });
   await prisma.payment.updateMany({
-    where: { orderId: tran_id, provider: 'sslcommerz' },
+    where: { orderId: tran_id, provider: PaymentProvider.SSLCOMMERZ },
     data: {
       status: PaymentStatus.COMPLETED,
       providerTransactionId: val_id,
@@ -131,6 +135,105 @@ const handleSSLCommerzIPN = catchAsync(async (req, res) => {
   res.status(200).send('IPN received');
 });
 
+const sslcommerzSuccess = catchAsync(async (req, res) => {
+  const queryOrderId = req.query.orderId as string | undefined;
+  const { tran_id, val_id } = req.body;
+  const orderId = queryOrderId || tran_id;
+
+  if (!orderId) {
+    res.redirect(`${envVars.SSL_COMMERZ.SSL_FAIL_FRONTEND_URL}?error=missing_order_id`);
+    return;
+  }
+
+  let isValid = true;
+  if (val_id) {
+    isValid = await SslService.validateSSLCommerz(val_id);
+  }
+
+  if (!isValid) {
+    await prisma.order.updateMany({
+      where: { id: orderId },
+      data: { paymentStatus: PaymentStatus.FAILED },
+    });
+    res.redirect(
+      `${envVars.SSL_COMMERZ.SSL_FAIL_FRONTEND_URL}?orderId=${encodeURIComponent(orderId)}&error=validation_failed`,
+    );
+    return;
+  }
+
+  await prisma.order.updateMany({
+    where: { id: orderId },
+    data: { paymentStatus: PaymentStatus.COMPLETED },
+  });
+
+  await prisma.payment.upsert({
+    where: {
+      orderId_provider: {
+        orderId,
+        provider: PaymentProvider.SSLCOMMERZ,
+      },
+    },
+    update: {
+      status: PaymentStatus.COMPLETED,
+      providerTransactionId: val_id || tran_id,
+      verifiedAt: new Date(),
+      verificationPayload: req.body as any,
+    },
+    create: {
+      orderId,
+      provider: PaymentProvider.SSLCOMMERZ,
+      method: PaymentMethod.SSLCOMMERZ,
+      amount: Number(req.body.amount || 0),
+      status: PaymentStatus.COMPLETED,
+      providerTransactionId: val_id || tran_id,
+      verifiedAt: new Date(),
+      verificationPayload: req.body as any,
+    },
+  });
+
+  res.redirect(
+    `${envVars.SSL_COMMERZ.SSL_SUCCESS_FRONTEND_URL}?orderId=${encodeURIComponent(orderId)}&tranId=${encodeURIComponent(val_id || tran_id || '')}`,
+  );
+});
+
+const sslcommerzFail = catchAsync(async (req, res) => {
+  const queryOrderId = req.query.orderId as string | undefined;
+  const { tran_id } = req.body;
+  const orderId = queryOrderId || tran_id;
+
+  if (orderId) {
+    await prisma.order.updateMany({
+      where: { id: orderId },
+      data: { paymentStatus: PaymentStatus.FAILED },
+    });
+    await prisma.payment.updateMany({
+      where: { orderId, provider: PaymentProvider.SSLCOMMERZ },
+      data: { status: PaymentStatus.FAILED },
+    });
+  }
+
+  res.redirect(
+    `${envVars.SSL_COMMERZ.SSL_FAIL_FRONTEND_URL}?orderId=${encodeURIComponent(orderId || '')}`,
+  );
+});
+
+const sslcommerzCancel = catchAsync(async (req, res) => {
+  const queryOrderId = req.query.orderId as string | undefined;
+  const { tran_id } = req.body;
+  const orderId = queryOrderId || tran_id;
+
+  if (orderId) {
+    await prisma.payment.updateMany({
+      where: { orderId, provider: PaymentProvider.SSLCOMMERZ },
+      data: { status: PaymentStatus.FAILED },
+    });
+  }
+
+  res.redirect(
+    `${envVars.SSL_COMMERZ.SSL_CANCEL_FRONTEND_URL}?orderId=${encodeURIComponent(orderId || '')}`,
+  );
+});
+
 export const PaymentsController = {
   getPayments,
   getPaymentById,
@@ -138,4 +241,7 @@ export const PaymentsController = {
   updatePayment,
   initSSLCommerz,
   handleSSLCommerzIPN,
+  sslcommerzSuccess,
+  sslcommerzFail,
+  sslcommerzCancel,
 };

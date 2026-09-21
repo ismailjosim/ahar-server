@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from '@generated/prisma/enums';
+import { FulfillmentType, PaymentMethod, PaymentStatus } from '@generated/prisma/enums';
 import type { OrderItemUncheckedCreateWithoutOrderInput } from '@generated/prisma/models/OrderItem';
 
 import { prisma } from '@/config/prisma.config';
@@ -8,61 +8,8 @@ import { calculatePagination } from '@/utils/paginationHelper';
 import { EmailService } from '@/utils/sendEmail';
 import StatusCode from '@/utils/statusCode';
 
+import { CreateOrderPayload, OrderRecord } from './orders.interface';
 import { fromDbOrderStatus, fromDbPaymentStatus, toDbOrderStatus } from './orders.utils';
-
-interface CreateOrderItemInput {
-  menuItemId?: string;
-  nameSnapshot: string;
-  quantity: number;
-  unitPrice: number;
-  selectedVariant?: Record<string, unknown>;
-  selectedAddOns?: unknown[];
-  lineTotal: number;
-}
-
-interface CreateOrderPayload {
-  customerName: string;
-  phone: string;
-  email?: string;
-  fulfillmentType: 'delivery' | 'pickup';
-  items: CreateOrderItemInput[];
-  address?: string;
-  notes?: string;
-  paymentMethod: string;
-  couponCode?: string;
-  userId?: string;
-}
-
-interface OrderItemRecord {
-  nameSnapshot: string;
-  quantity: number;
-  unitPrice: number;
-  lineTotal: number;
-  selectedVariant: unknown;
-  selectedAddOns: unknown;
-}
-
-interface OrderRecord {
-  id: string;
-  customerName: string;
-  phone: string;
-  email: string | null;
-  fulfillmentType: string;
-  itemSummary: string;
-  address: string | null;
-  notes: string | null;
-  subtotal: number;
-  deliveryFee: number;
-  vat: number;
-  serviceCharge: number;
-  discount: number;
-  total: number;
-  paymentMethod: string;
-  paymentStatus: PaymentStatus;
-  status: OrderStatus;
-  createdAt: Date;
-  items?: OrderItemRecord[];
-}
 
 const capitalize = (value: string) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
@@ -257,7 +204,7 @@ const createOrder = async (payload: CreateOrderPayload) => {
       customerName: payload.customerName,
       phone: payload.phone,
       email: payload.email,
-      fulfillmentType: payload.fulfillmentType,
+      fulfillmentType: payload.fulfillmentType.toUpperCase() as FulfillmentType,
       itemSummary,
       address: payload.address,
       notes: payload.notes,
@@ -267,24 +214,14 @@ const createOrder = async (payload: CreateOrderPayload) => {
       serviceCharge,
       discount,
       total,
-      paymentMethod: payload.paymentMethod,
+      paymentMethod: payload.paymentMethod.toUpperCase() as PaymentMethod,
       userId: payload.userId ?? null,
       items: { create: items },
     },
     include: { items: true },
   });
 
-  if (payload.paymentMethod === 'cod') {
-    await prisma.payment.create({
-      data: {
-        orderId: order.id,
-        provider: 'cod',
-        method: 'cod',
-        amount: order.total,
-        status: PaymentStatus.PENDING,
-      },
-    });
-  }
+  // For COD, payment is tracked directly on Order (paymentStatus: PENDING until Delivered)
 
   // Send order confirmation email
   if (order.email) {
@@ -292,7 +229,7 @@ const createOrder = async (payload: CreateOrderPayload) => {
       customerName: order.customerName,
       email: order.email,
       id: order.id,
-      items: (order.items ?? []).map((i) => ({
+      items: order.items.map((i) => ({
         name: i.nameSnapshot,
         quantity: i.quantity,
         lineTotal: i.lineTotal,
@@ -349,7 +286,7 @@ const updateOrderStatus = async (id: string, status: string) => {
     await prisma.payment.updateMany({
       where: {
         orderId: id,
-        method: 'cod',
+        method: PaymentMethod.COD,
         status: PaymentStatus.PENDING,
       },
       data: { status: PaymentStatus.COMPLETED },

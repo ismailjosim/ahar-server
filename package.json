@@ -66,5 +66,14 @@
     "@types/node": "^24.5.2",
     "@types/nodemailer": "^7.0.3",
     "@types/pg": "^8.20.0"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
