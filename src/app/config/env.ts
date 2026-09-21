@@ -1,6 +1,10 @@
 import dotenv from 'dotenv';
 
-dotenv.config({ path: ['.env.local', '.env'] });
+dotenv.config({ path: '.env.local' });
+
+const environment = process.env.NODE_ENV || 'development';
+
+dotenv.config({ path: [`.env.${environment}`, '.env'] });
 
 interface EnvConfig {
   PORT: string;

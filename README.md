@@ -25,6 +25,8 @@ pnpm dev
 
 PostgreSQL is required. Configure `DATABASE_URL` in `.env` before running migrations or starting the server.
 
+For Vercel, add the variables from `.env.example` in the project settings under Environment Variables. This includes a strong, private `BETTER_AUTH_SECRET`; `.env.local` and `.env` are not available in the deployed runtime. Add the variables to the Production environment and redeploy after saving them.
+
 ## Scripts
 
 - `pnpm dev` - run the TypeScript server with watch mode.
