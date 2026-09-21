@@ -19,12 +19,26 @@ const toClient = (order: OrderRecord | null) => {
   return {
     id: order.id,
     customer: order.customerName,
+    customerName: order.customerName,
     phone: order.phone,
     email: order.email,
     fulfillmentType: order.fulfillmentType,
-    // `items` stays a summary string for backward-compatible list/table views.
-    items: order.itemSummary,
     itemSummary: order.itemSummary,
+    items: (order.items ?? []).map((item) => ({
+      id: item.id,
+      orderId: item.orderId,
+      menuItemId: item.menuItemId,
+      nameSnapshot: item.nameSnapshot,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.lineTotal,
+      notes: null,
+      menuItem: {
+        id: item.menuItemId || '',
+        name: item.nameSnapshot,
+        price: item.unitPrice,
+      },
+    })),
     // `lineItems` carries the structured breakdown for the tracking page.
     lineItems: (order.items ?? []).map((item) => ({
       name: item.nameSnapshot,
@@ -273,16 +287,24 @@ const updateOrderStatus = async (id: string, status: string) => {
     status: toDbOrderStatus(status),
   };
 
-  // When transitioning to "Delivered", deduct inventory and update payment
-  if (status === 'Delivered') {
-    // Deduct inventory from order items
-    const orderItems = (order.items ?? []).map((item) => ({
-      nameSnapshot: item.nameSnapshot,
-      quantity: item.quantity,
-    }));
-    await InventoryService.adjustStockForOrder(orderItems);
+  // Trigger inventory deduction when order is Accepted, Preparing, or Delivered (idempotent)
+  const INVENTORY_DEDUCT_STATUSES = ['Accepted', 'Preparing', 'Delivered'];
+  if (INVENTORY_DEDUCT_STATUSES.includes(status)) {
+    const alreadyDeducted = await prisma.inventoryAudit.findFirst({
+      where: { reason: { contains: `[Order #${id}]` } },
+    });
 
-    // Mark COD payment as completed
+    if (!alreadyDeducted) {
+      const orderItems = (order.items ?? []).map((item) => ({
+        nameSnapshot: item.nameSnapshot,
+        quantity: item.quantity,
+      }));
+      await InventoryService.adjustStockForOrder(orderItems, id);
+    }
+  }
+
+  // When transitioning to "Delivered", mark COD payment as completed
+  if (status === 'Delivered') {
     await prisma.payment.updateMany({
       where: {
         orderId: id,

@@ -30,6 +30,9 @@ export interface CreateOrderPayload {
 }
 
 export interface OrderItemRecord {
+  id?: string;
+  orderId?: string;
+  menuItemId?: string | null;
   nameSnapshot: string;
   quantity: number;
   unitPrice: number;

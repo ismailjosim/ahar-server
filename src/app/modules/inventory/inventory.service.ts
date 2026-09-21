@@ -6,8 +6,12 @@ import StatusCode from '@/utils/statusCode';
 type InventoryPayload = Record<string, unknown>;
 type InventoryItemWithAudits = Awaited<ReturnType<typeof prisma.inventoryItem.findFirst>> & {
   audits?: {
+    id: string;
+    change: number;
+    previousStock: number;
     nextStock: number;
     reason: string | null;
+    createdAt: Date;
   }[];
 };
 
@@ -27,6 +31,15 @@ const toClient = (item: InventoryItemWithAudits) => {
     history: item.audits?.length
       ? item.audits.map((audit) => audit.reason || `Stock changed to ${audit.nextStock}`)
       : ['Item loaded'],
+    audits:
+      item.audits?.map((audit) => ({
+        id: audit.id,
+        details: audit.reason || `Stock: ${audit.previousStock} -> ${audit.nextStock}`,
+        change: audit.change,
+        previousStock: audit.previousStock,
+        nextStock: audit.nextStock,
+        createdAt: audit.createdAt,
+      })) || [],
   };
 };
 
@@ -178,7 +191,7 @@ interface OrderItemForInventory {
   quantity: number;
 }
 
-const adjustStockForOrder = async (items: OrderItemForInventory[]) => {
+const adjustStockForOrder = async (items: OrderItemForInventory[], orderId?: string) => {
   for (const item of items) {
     // Simple name-based lookup — case insensitive, partial match
     const invItem = await prisma.inventoryItem.findFirst({
@@ -199,13 +212,14 @@ const adjustStockForOrder = async (items: OrderItemForInventory[]) => {
       data: { stock: newStock },
     });
 
+    const prefix = orderId ? `[Order #${orderId}] ` : '';
     await prisma.inventoryAudit.create({
       data: {
         inventoryItemId: invItem.id,
         change: -item.quantity,
         previousStock: invItem.stock,
         nextStock: newStock,
-        reason: `Auto-deducted: order item "${item.nameSnapshot}"`,
+        reason: `${prefix}Auto-deducted: order item "${item.nameSnapshot}"`,
       },
     });
 
