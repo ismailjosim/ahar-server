@@ -1,7 +1,12 @@
-import { createRequire } from 'node:module';
-
-const httpStatus = createRequire(__filename)('http-status') as typeof import('http-status', {
-  with: { 'resolution-mode': 'import' },
+const StatusCode = Object.freeze({
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  BAD_GATEWAY: 502,
 });
-const StatusCode = httpStatus.default;
+
 export default StatusCode;
