@@ -8,6 +8,7 @@ export interface IResponse<T> {
     page: number;
     limit: number;
     total: number;
+    [key: string]: number | undefined;
   };
   data?: T | null;
 }
