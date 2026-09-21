@@ -1,5 +1,3 @@
-import { createRequire } from 'node:module';
-
 import { UserRole, UserStatus } from '@generated/prisma/enums';
 import type { NextFunction, Request, Response } from 'express';
 
@@ -9,10 +7,6 @@ import { prisma } from '@/config/prisma.config';
 import AppError from '@/helpers/AppError';
 import { AuthPayload } from '@/interfaces/auth';
 import StatusCode from '@/utils/statusCode';
-
-const jose = createRequire(__filename)('jose-cjs') as typeof import('jose-cjs', {
-  with: { 'resolution-mode': 'import' },
-});
 
 declare module 'express' {
   interface Request {
@@ -52,7 +46,8 @@ async function resolveUserFromRequest(req: Request): Promise<AuthPayload | null>
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
-    const { payload } = await jose.jwtVerify(token, JWKS, {
+    const { jwtVerify } = await import('jose-cjs');
+    const { payload } = await jwtVerify(token, await JWKS, {
       issuer: `${envVars.FRONTEND_URL}/api/auth`,
     });
 

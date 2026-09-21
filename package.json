@@ -8,7 +8,7 @@
     "clean": "rimraf dist",
     "copy:templates": "copyfiles -u 4 src/app/utils/templates/**/* dist/app/utils/templates",
     "build": "prisma generate && tsc && tsc-alias && pnpm copy:templates",
-    "vercel-build": "pnpm build",
+    "vercel-build": "pnpm clean && pnpm build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
